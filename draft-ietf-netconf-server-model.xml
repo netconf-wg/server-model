@@ -206,8 +206,8 @@
         <section title="Data Model">
           <section title="Overview">
               <t>To enable transports to configure listening on one
-              or more ports in a common way, this grouping is defined.
-              This grouping defines SSH and TLS specific containers, each
+              or more ports in a common way, the following subtree is defined.
+              This subtree defines SSH and TLS specific containers, each
               of which refines the default listening port appropriately.
               Further, each of these transport specific containers use a
               feature statement, enabling NETCONF servers to accurately
@@ -221,8 +221,8 @@ INSERT_TEXT_FROM_FILE(figures/listen-tree.txt)
               </t>
 
               <t>To enable transports to configure initiating connections
-              to remote applications in a common way, this grouping is
-              defined.  This grouping configures a list of network-managers,
+              to remote applications in a common way, the following subtree is
+              defined.  This subtree configures a list of appliacations,
               each with some transport-specific configuration augmented in.
               Each of the transport specific containers use a feature 
               statement, enabling NETCONF servers to accurately advertise

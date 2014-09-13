@@ -19,3 +19,6 @@ cat >> $OUT <<EOF
 EOF
 
 yang2dsdl -t edit-config -v $OUT $2 $3
+
+rm $OUT
+

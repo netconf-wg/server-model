@@ -1,49 +1,23 @@
 <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
   <listen>
+    <name>foo bar</name>
     <ssh>
       <port>831</port>
     </ssh>
   </listen>
   <call-home>
-    <network-managers>
-      <network-manager>
-        <name>config-mgr</name>
-        <description>
-           This entry requests the device to periodically
-           connect to the network manager.
-        </description>
-        <endpoints>
-           <endpoint>
-              <address>config-mgr1.example.com</address>
-           </endpoint>
-           <endpoint>
-              <address>config-mgr2.example.com</address>
-           </endpoint>
-        </endpoints>
-        <transport>
-           <ssh>
-              <host-keys>
-                 <host-key>
-                    <name>ssh_host_key_cert</name>
-                 </host-key>
-                 <host-key>
-                    <name>ssh_host_key_cert2</name>
-                 </host-key>
-              </host-keys>
-           </ssh>
-        </transport>
-        <connection-type>
-          <periodic>
-            <timeout-mins>5</timeout-mins>
-            <linger-secs>10</linger-secs>
-          </periodic>
-        </connection-type>
-        <reconnect-strategy>
-           <start-with>last-connected</start-with>
-           <interval-secs>10</interval-secs>
-           <count-max>3</count-max>
-        </reconnect-strategy>
-      </network-manager>
-    </network-managers>
+    <name>config-mgr</name>
+    <ssh>
+      <endpoints>
+        <endpoint>
+          <name>east-data-center</name>
+          <address>11.22.33.44</address>
+        </endpoint>
+        <endpoint>
+          <name>west-data-center</name>
+          <address>55.66.77.88</address>
+        </endpoint>
+      </endpoints>
+     </ssh>
   </call-home>
 </netconf-server>
