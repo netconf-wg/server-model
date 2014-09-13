@@ -1,0 +1,45 @@
+<netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+  <listen>
+    <tls>
+      <interface>
+        <address>192.0.2.1</address>
+        <port>6514</port>
+      </interface>
+    </tls>
+  </listen>
+  <call-home>
+    <network-managers>
+      <network-manager>
+        <name>log-monitor</name>
+        <description>
+           This entry requests the device to maintain a
+           persistent connect to the network manager.
+        </description>
+        <endpoints>
+           <endpoint>
+              <address>log-monitor1.example.com</address>
+           </endpoint>
+           <endpoint>
+              <address>log-monitor2.example.com</address>
+           </endpoint>
+        </endpoints>
+        <transport>
+          <tls/>
+        </transport>
+        <connection-type>
+          <persistent>
+            <keep-alives>
+              <interval-secs>5</interval-secs>
+              <count-max>3</count-max>
+            </keep-alives>
+          </persistent>
+        </connection-type>
+        <reconnect-strategy>
+           <start-with>first-listed</start-with>
+           <interval-secs>10</interval-secs>
+           <count-max>4</count-max>
+        </reconnect-strategy>
+      </network-manager>
+    </network-managers>
+  </call-home>
+</netconf-server>

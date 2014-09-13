@@ -1,0 +1,46 @@
+<system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
+  <authentication>
+    <tls xmlns="urn:ietf:params:xml:ns:yang:ietf-system-tls-auth">
+
+      <trusted-ca-certs>
+        <trusted-ca-cert>
+          QW4gRWFzdGVyIGVnZywgZm9yIHRob3NlIHdobyBtaWdodCBsb29rICA6KQo=
+        </trusted-ca-cert>
+      </trusted-ca-certs>
+
+      <trusted-client-certs>
+        <trusted-client-cert>
+          SSBhbSB0aGUgZWdnIG1hbiwgdGhleSBhcmUgdGhlIGVnZyBtZW4uCg==
+        </trusted-client-cert>
+        <trusted-client-cert>
+          SSBhbSB0aGUgd2FscnVzLCBnb28gZ29vIGcnam9vYi4K
+        </trusted-client-cert>
+      </trusted-client-certs>
+
+      <cert-maps>
+        <cert-to-name>
+          <id>1</id>
+          <fingerprint>11:0A:05:11:00</fingerprint>
+          <map-type>x509c2n:san-any</map-type>
+        </cert-to-name>
+        <cert-to-name>
+          <id>2</id>
+          <fingerprint>11:0A:05:11:00</fingerprint>
+          <map-type>x509c2n:specified</map-type>
+          <name>Joe Cool</name>
+        </cert-to-name>
+      </cert-maps>
+    
+      <psk-maps>
+        <psk-map>
+          <psk-identity>a8gc8]klh59</psk-identity>
+          <user-name>admin</user-name>
+          <not-valid-before>2013-01-01T00:00:00Z</not-valid-before>
+          <not-valid-after>2014-01-01T00:00:00Z</not-valid-after>
+        </psk-map>
+      </psk-maps>
+
+    </tls>
+  </authentication>
+</system>
+

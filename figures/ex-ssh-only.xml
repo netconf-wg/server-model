@@ -1,0 +1,9 @@
+<netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+  <listen>
+    <name>foo bar</name>
+    <ssh>
+      <port>831</port>
+    </ssh>
+  </listen>
+</netconf-server>
+

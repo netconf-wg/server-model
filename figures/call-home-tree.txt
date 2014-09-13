@@ -1,0 +1,32 @@
+module: ietf-netconf-server
+   +--rw netconf-server
+      +--rw call-home
+         +--rw network-managers
+            +--rw network-manager* [name]
+               +--rw name                  string
+               +--rw description?          string
+               +--rw endpoints
+               |  +--rw endpoint* [address]
+               |     +--rw address    inet:host
+               |     +--rw port?      inet:port-number
+               +--rw transport
+               |  +--rw ssh {ssh-call-home}?
+               |  |  +--rw host-keys
+               |  |     +--rw host-key* [name]
+               |  |        +--rw name    string
+               |  +--rw tls! {tls-call-home}?
+               +--rw connection-type
+               |  +--rw (connection-type)?
+               |     +--:(persistent-connection)
+               |     |  +--rw persistent
+               |     |     +--rw keep-alives
+               |     |        +--rw interval-secs?   uint8
+               |     |        +--rw count-max?       uint8
+               |     +--:(periodic-connection)
+               |        +--rw periodic
+               |           +--rw timeout-mins?   uint8
+               |           +--rw linger-secs?    uint8
+               +--rw reconnect-strategy
+                  +--rw start-with?      enumeration
+                  +--rw interval-secs?   uint8
+                  +--rw count-max?       uint8

@@ -1,0 +1,782 @@
+<?xml version='1.0'?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+]>
+
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<?rfc linkmailto="no" ?>
+<?rfc editing="no" ?>
+<?rfc comments="yes" ?>
+<?rfc inline="yes"?>
+<?rfc rfcedstyle="yes"?>
+<?rfc-ext allow-markup-in-artwork="yes" ?>
+<?rfc-ext include-index="no" ?>
+<!--<?rfc strict="no"?> -->
+
+<rfc category="std"
+     ipr="trust200902"
+     docName="draft-ietf-netconf-server-model-latest" >
+    <front>
+        <title abbrev="NETCONF Server Configuration Model">NETCONF Server Configuration Model</title>
+        <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
+            <organization>Juniper Networks</organization>
+            <address>
+                <email>kwatsen@juniper.net</email>
+            </address>
+        </author>
+        <author initials="J.S." surname="Schoenwaelder" fullname="Juergen Schoenwaelder">
+            <organization>Jacobs University Bremen</organization>
+            <address>
+                <email>j.schoenwaelder@jacobs-university.de</email>
+            </address>
+        </author>
+ 
+        <date month="September" year="2014"/>
+        <area>Operations</area>
+        <workgroup>NETCONF Working Group</workgroup>
+        <keyword>netconf-server</keyword>
+        <abstract>
+            <t>This draft defines a NETCONF server configuration data model.
+            This data model enables configuration of the NETCONF service
+            itself, including which transports it supports, what ports
+            they listen on, whether they support device-initiated 
+            connections, and associated parameters.</t>
+        </abstract>
+    </front>
+    <middle>
+
+        <section title="Introduction">
+            <t>This draft defines a NETCONF <xref target="RFC6241"/> server
+            configuration data model.
+            This data model enables configuration of the NETCONF service
+            itself, including which transports are supported, what ports
+            does the server listen on, whether call-home is supported, and
+            associated parameters.</t>
+            <section title="Terminology">
+              <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL",
+              "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+              and "OPTIONAL" in this document are to be interpreted as
+              described in RFC 2119 <xref target="RFC2119"/>.</t>
+            </section>
+            <section title="Tree Diagrams">
+            <t>A simplified graphical representation of data models
+            is used in this document.  The meaning of the symbols in
+            these diagrams is as follows:
+              <list style="symbols">
+                <t>Brackets "[" and "]" enclose list keys.</t>
+                <t>Abbreviations before data node names: "rw" means
+                configuration (read-write) and "ro" state data 
+                (read-only).</t>
+                <t>Symbols after data node names: "?" means an optional
+                node, "!" means a presence container, and "*" denotes a
+                list and leaf-list.</t>
+                <t>Parentheses enclose choice and case nodes, and case
+                nodes are also marked with a colon (":").</t>
+              </list>
+            </t>
+            </section>
+        </section>
+
+        <section title="Objectives">
+          <t>The primary purpose of the YANG module defined herein is
+          to enable the configuration of the NETCONF service on the
+          device.  This scope includes the following objectives:</t>
+          <section title="Support all NETCONF Transports">
+            <t>The YANG module should support all current NETCONF
+            transports, namely NETCONF over SSH <xref
+            target="RFC6242"/> and NETCONF over TLS <xref
+            target="I-D.ietf-netconf-rfc5539bis"/>, and be extensible
+            to support future transports as necessary.</t>
+            <t>Since implementations may not support all transports,
+            the module should use YANG &quot;feature&quot; statements
+            so that implementations can accurately advertise which
+            transports are supported.</t>
+          </section>
+          <section title="Align Transport-Specific Configurations">
+            <t>While each transport is unique in its protocol and
+            may have some distinct configurations, there remains
+            a significant overlap between them.  Thus the YANG module
+            should use &quot;grouping&quot; statements so that the
+            common aspects can be configured similarly.</t>
+          </section>
+          <section title="Support both Listening for Connections and Call Home">
+            <t>NETCONF has always supported the server opening
+            a port to listen for client connections.  More recently
+            the NETCONF working group defined support for call-home 
+            (<xref target="I-D.ietf-netconf-rfc5539bis"/> and 
+            <xref target="draft-ieft-netconf-reverse-ssh"/>).  The
+            module should configure both listening for connections
+            and call-home.</t>
+            <t>Since implementations may not support both listening for
+            connections and call home, YANG &quot;feature&quot; statements
+            should be used so that implementation can accurately 
+            advertise the connection types it supports.</t>
+          </section>
+          <section title="For Call Home Connections">
+            <t>The following objectives only pertain to call home
+             connections.</t>
+            <section title="Support More than One Application">
+              <t>A device may be managed by more than one northbound
+              application.  For instance, a deployment may have one
+              application for provisioning and another for fault
+              monitoring.  Therefore, when it is desired for a device
+              to initiate call home connections, it should be able to
+              do so for more than one application.</t>
+            </section>
+            <section title="Support Applications Having More than One Server">
+              <t>An application managing a device may implement a 
+              high-availability strategy employing a multiplicity of
+              active and/or passive servers.  Therefore, when it is
+              desired for a device to initiate call home connections,
+              it should be able to connect to any of the applications
+              servers.</t>
+            </section>
+            <section title="Support a Reconnection Strategy">
+              <t>Assuming an application has more than one server, then
+              it becomes necessary to configure how a device should
+              reconnect to the application should it lose its 
+              connection to the application's servers.
+              Of primary interest is if the device should
+              start with first server defined in a user-ordered
+              list of servers or with the last server it was connected
+              to.  Secondary settings might specify the frequency of
+              attempts and number of attempts per server.  Therefore,
+              a reconnection strategy should be configurable.</t>
+            </section>
+            <section title="Support both Persistent and Periodic Connections">
+              <t>Applications may vary greatly on how frequently they
+              need to interact with a device, how responsive interactions
+              with devices need to be, and how many simultaneous connections
+              they can support.  Some applications may need a persistent
+              connection to devices to optimize real-time interactions, 
+              while others are satisfied with periodic interactions and
+              reduced resources required.  Therefore, when it is necessary
+              for devices to initiate connections, the type of connection
+              desired should be configured.</t>
+            </section>
+            <section title="Reconnection Strategy for Periodic Connections">
+              <t>The reconnection strategy should apply to both 
+              persistent and periodic connections.  How it
+              applies to periodic connections becomes clear when
+              considering that a periodic &quot;connection&quot; is
+              a logical connection to a single server.  That is,
+              the periods of unconnectedness are intentional as 
+              opposed to due to external reasons.  A periodic
+              &quot;connection&quot; should always reconnect to 
+              the same server until it is no longer able to, at 
+              which time the reconnection strategy guides how to
+              connect to another server.</t>
+            </section>
+            <section anchor="keepalives" title="Keep-Alives for Persistent Connections">
+              <t>If a persistent connection is desired, it is the 
+              responsibility of the connection-initiator to actively
+              test the aliveness of the connection.  The connection
+              initiator must immediately work to reestablish a 
+              persistent connection as soon as the connection is
+              lost.  How often the connection should be tested is
+              driven by applications requirements, and therefore
+              keep-alive settings should be configurable on a 
+              per-application basis.</t>
+            </section>
+            <section title="Customizations for Periodic Connections">
+              <t>If a periodic connection is desired, it is necessary
+              for the device to know how often it should connect.  This
+              delay essentially determines how long the 
+              application might have to wait to send data to the device.
+              This setting does not constrain how often the 
+              device must wait to send data to the application, as the
+              device should immediately connect to the application 
+              whenever it has data to send to it.</t>
+              <t>A common communication pattern is that one data
+              transmission is many times closely followed by
+              another.  For instance, if the device needs to send a
+              notification message, there's a high probability that
+              it will send another shortly thereafter.  Likewise,
+              the application may have a sequence of pending messages
+              to send.  Thus, it should be possible for a device to
+              hold a connection open until some amount of time of no
+              data being transmitted as transpired.</t>
+            </section>
+          </section>
+        </section>
+
+        <section title="Data Model">
+          <section title="Overview">
+              <t>To enable transports to configure listening on one
+              or more ports in a common way, this grouping is defined.
+              This grouping defines SSH and TLS specific containers, each
+              of which refines the default listening port appropriately.
+              Further, each of these transport specific containers use a
+              feature statement, enabling NETCONF servers to accurately
+              advertise what they support.</t>
+              <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(figures/listen-tree.txt)
+]]></artwork>
+              </figure>
+              </t>
+
+              <t>To enable transports to configure initiating connections
+              to remote applications in a common way, this grouping is
+              defined.  This grouping configures a list of network-managers,
+              each with some transport-specific configuration augmented in.
+              Each of the transport specific containers use a feature 
+              statement, enabling NETCONF servers to accurately advertise
+              what they support.</t>
+              <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(figures/call-home-tree.txt)
+]]></artwork>
+              </figure>
+              </t>
+          </section>
+
+
+          <section title="YANG Module">
+            <t>This YANG module imports YANG types from <xref
+            target="RFC6991"/>.</t>
+            <t>
+            <figure>
+              <!--<preamble>The YANG Module</preamble>-->
+              <artwork><![CDATA[
+   RFC Ed.: update the date below with the date of RFC publication 
+   and remove this note.
+
+   <CODE BEGINS> file "ietf-netconf-server.@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
+
+   <CODE ENDS>
+
+]]></artwork>
+            </figure>
+            </t>
+          </section>
+        </section>
+
+        <section title="Keep-Alives for SSH and TLS">
+          <t>One the objectives listed above, <xref target="keepalives">
+          Keep-Alives for Persistent Connections</xref> indicates a need
+          for a "keep-alive" mechanism.  This section specifies how the
+          NETCONF keep-alive mechanism is to be implemented.</t>
+
+          <t>Both SSH and TLS have the ability to support keep-alives.
+          Using these mechanisms, the keep-alive messages are sent inside
+          the encrypted tunnel, thus thwarting spoof attacks.</t>
+
+          <section title="SSH">
+            <t>The SSH keep-alive solution that is expected to be used
+            when configured using the data model defined in this document
+            is ubiquitous in practice, though never being explicitly defined
+            in an RFC.  The strategy used is to purposely send a malformed
+            request message with a flag set to ensure a response.  More
+            specifically, per section 4 of <xref target="RFC4253"/>, either 
+            SSH peer can send a SSH_MSG_GLOBAL_REQUEST message with "want 
+            reply" set to '1' and that, if there is an error, will get back
+            a SSH_MSG_REQUEST_FAILURE response.  Similarly, section 5 of 
+            <xref target="RFC4253"/> says that either SSH peer can send a
+            SSH_MSG_CHANNEL_REQUEST message with "want reply" set to '1' 
+            and that, if there is an error, will get back a 
+            SSH_MSG_CHANNEL_FAILURE response.</t>
+
+            <t>To ensure that the request will fail, current implementations
+            send an invalid "request name" or "request type", respectively.
+            Abiding to the extensibility guidelines specified in Section 6
+            of <xref target="RFC4251"/>, these implementations use the 
+            "name@domain".  For instance, when configured to send keep-alives,
+            OpenSSH sends the string "keepalive@openssh.com".  In order to
+            remain compatible with existing implementations, this draft does
+            not require a specific "request name" or "request type" string
+            be used.</t>
+          </section>
+
+          <section title="TLS">
+            <t>The TLS keep-alive solution is defined in <xref target="RFC6520"/>.  
+            This solution allows both peers to advertise if they can
+            receive heartbeat request messages from its peer.  
+            For standard NETCONF over TLS connections, devices SHOULD
+            advertise "peer_allowed_to_send", as per <xref target="RFC6520"/>.
+            This advertisement is not a "MUST" in order to grandfather
+            existing NETCONF over TLS implementations.
+            For NETCONF over TLS Call Home, the network management
+            system MUST advertise "peer_allowed_to_send" per
+            <xref target="RFC6520"/>.  This is a "MUST" so as to ensure
+            devices can depend in it always being there for call home
+            connections, which is conveniently when keep-alives are
+            needed the most.</t>
+          </section>
+
+        </section>
+
+        <section title="User Authentication for TLS">
+          <section title="Introduction">
+            <t>The NETCONF Server Module defined in this draft focuses on the
+            configuration the SSH and TLS transports.  This module does not 
+            define a means to configure User Authentication, as that is a
+            stated focus for <xref target="draft-ietf-netmod-system-mgmt"/>,
+            however, that draft does not define configuration nodes for
+            TLS client authentication.  Thus, this draft also includes the 
+            following YANG module to augment TLS client authentication into 
+            the "ietf-system" module defined in 
+            <xref target="draft-ietf-netmod-system-mgmt"/>.</t>
+          </section>
+
+          <section title="Data Model Overview">
+            <t>This data model augments the "ietf-system" module
+            defined in <xref target="draft-ietf-netmod-system-mgmt"/> 
+            by adding some configuration nodes under its 
+            "/system/authentication" subtree.</t>
+            <t>
+            <figure>
+                <artwork><![CDATA[
+#NSERT_TEXT_FROM_FILE(ietf-system-tls-auth.yang.tree)
+  ]]></artwork>
+            </figure>
+            </t>
+          </section>
+
+          <section title="YANG Module">
+            <t>This YANG module imports YANG extensions from <xref
+            target="RFC6536"/>, and imports YANG types from <xref
+            target="RFC6991"/> and a YANG grouping from <xref
+            target="I-D.ietf-netmod-snmp-cfg"/>.</t>
+            <t>
+            <figure>
+                <!--<preamble>The YANG Module</preamble>-->
+                <artwork><![CDATA[
+     RFC Ed.: update the date below with the date of RFC publication 
+     and remove this note.
+  
+     <CODE BEGINS> file "ietf-system-tls-auth.@2014-05-16.yang"
+  
+#NSERT_TEXT_FROM_FILE(ietf-system-tls-auth.yang)
+  
+     <CODE ENDS>
+  
+  ]]></artwork>
+            </figure>
+            </t>
+          </section>
+        </section>
+
+        <section title="Security Considerations">
+            <t>The YANG modules defined in this memo are designed to be
+            accessed via the NETCONF protocol <xref target="RFC6241"/>.  
+            Authorization for access to specific portions of conceptual
+            data and operations within this module is provided by the
+            NETCONF access control model (NACM) <xref target="RFC6536"/>.</t>
+
+            <t>There are a number of data nodes defined in the 
+            "ietf-netconf-server" and "ietf-system-tls-auth" YANG 
+            modules which are writable/creatable/deletable (i.e., 
+            config true, which is the default).  These data nodes
+            may be considered sensitive or vulnerable in some 
+            network environments.  Write and read operations to
+            these data nodes can have a negative effect on network
+            operations.  It is thus important to control write
+            and read access to these data nodes.  Below are the 
+            data nodes and their sensitivity/vulnerability.</t>
+
+            <t>ietf-netconf-server:
+            <list style="symbols">
+                <t>None.</t>
+            </list>
+            </t>
+
+            <t>ietf-system-tls-auth:
+            <list style="symbols">
+                <t>/system/authentication/tls/psk-maps/psk-map/user-name:
+                This leaf node contains a user name that some deployments
+                may consider sensitive information.</t>
+                <t>/system/authentication/tls/psk-maps/psk-map/key: This 
+                leaf node contains a shared key that remote clients use
+                to authenticate themselves to the system.  This value
+                should not be readable or writable by anyone by default.</t>
+            </list>
+            </t>
+        </section>
+
+        <section title="IANA Considerations">
+          <t>This document registers two URIs in the IETF XML 
+          registry <xref target="RFC2119"/>.  Following the format in 
+          <xref target="RFC3688"/>, the following registrations are 
+          requested:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+      URI: urn:ietf:params:xml:ns:yang:ietf-netconf-server
+      Registrant Contact: The NETCONF WG of the IETF.
+      XML: N/A, the requested URI is an XML namespace.
+
+      URI: urn:ietf:params:xml:ns:yang:ietf-system-tle-auth
+      Registrant Contact: The NETCONF WG of the IETF.
+      XML: N/A, the requested URI is an XML namespace.
+]]></artwork>
+            </figure>
+          </t>
+          <t>This document registers two YANG modules in the
+          YANG Module Names registry <xref target="RFC6020"/>.</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+   name:         ietf-netconf-server
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-netconf-server
+   prefix:       ncserver
+   reference:    RFC XXXX
+
+   name:         ietf-system-tls-auth
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-system-tls-auth
+   prefix:       sys-tls-auth
+   reference:    RFC XXXX
+]]></artwork>
+            </figure>
+          </t>
+        </section>
+
+        <section title="Other Considerations">
+            <t>The YANG module define herein does not itself support
+            virtual routing and forwarding (VRF).  It is expected that
+            external modules will augment in VRF designations when needed.</t>
+        </section>
+
+        <section title="Acknowledgements">
+          <t>The authors would like to thank for following for
+          lively discussions on list and in the halls (ordered
+          by last name): Andy Bierman, Martin Bjorklund, 
+          Benoit Claise, David Lamparter, Alan Luchuk, Ladislav Lhotka,
+          Radek Krejci, Tom Petch, and Phil Shafer.</t>
+         <t>
+           Juergen Schoenwaelder and was partly funded by Flamingo, a
+           Network of Excellence project (ICT-318488) supported by the
+           European Commission under its Seventh Framework Programme.
+         </t>
+       </section>
+
+    </middle>
+
+    <back>
+      <references title="Normative References">
+        <reference anchor="RFC2119">
+          <front>
+            <title>
+              Key words for use in RFCs to Indicate Requirement Levels
+            </title>
+            <author initials="S.B." surname="Bradner"
+                    fullname="Scott Bradner">
+              <organization>Harvard University</organization>
+            </author>
+            <date month="March" year="1997" />
+          </front>
+          <seriesInfo name="BCP" value="14" />
+          <seriesInfo name="RFC" value="2119" />
+        </reference>
+
+        <reference anchor="RFC4251">
+            <front>
+                <title>
+                    The Secure Shell (SSH) Protocol Architecture
+                </title>
+                <author initials="T.Y." surname="Ylonen"
+                                        fullname="Tatu Ylonen">
+                    <organization>
+                      SSH Communications Security Corp
+                    </organization>
+                </author>
+                <author initials="C.L." surname="Lonvick"
+                        fullname="Chris Lonvick">
+                    <organization>
+                      Cisco Systems, Inc.
+                    </organization>
+                </author>
+                <date month="January" year="2006" />
+            </front>
+            <seriesInfo name="RFC" value="4251" />
+        </reference>
+
+        <reference anchor="RFC4253">
+            <front>
+                <title>
+                    The Secure Shell (SSH) Transport Layer Protocol
+                </title>
+                <author initials="T.Y." surname="Ylonen"
+                                        fullname="Tatu Ylonen">
+                    <organization>
+                      SSH Communications Security Corp
+                    </organization>
+                </author>
+                <author initials="C.L." surname="Lonvick"
+                        fullname="Chris Lonvick">
+                    <organization>
+                      Cisco Systems, Inc.
+                    </organization>
+                </author>
+                <date month="January" year="2006" />
+            </front>
+            <seriesInfo name="RFC" value="4253" />
+        </reference>
+
+        <reference anchor="RFC6020">
+          <front>
+            <title>
+              YANG - A Data Modeling Language for the 
+              Network Configuration Protocol (NETCONF)
+            </title>
+            <author initials="M." surname="Bjorklund"
+                    fullname="Martin Bjorklund" role="editor">
+              <organization>Tail-f Systems</organization>
+            </author>
+            <date month="October" year="2010" />
+          </front>
+          <seriesInfo name="RFC" value="6020" />
+        </reference>
+
+       <reference anchor='RFC6520'>
+         <front>
+           <title>
+             Transport Layer Security (TLS) and Datagram Transport
+              Layer Security (DTLS) Heartbeat Extension
+           </title>
+           <author initials='R.S.' surname='Seggelmann' 
+              fullname='Robin Seggleman'>
+             <organization>Muenster University of Applied Sciences</organization>
+           </author>
+           <author initials='M.T.' surname='Tuexen' 
+              fullname='Michael Tuexen'>
+             <organization>Muenster University of Applied Sciences</organization>
+           </author>
+           <author initials='M.W.' surname='Williams'
+              fullname='Michael Williams'>
+             <organization>GWhiz Arts &amp; Sciences</organization>
+           </author>
+           <date year='2012' month='February' />
+         </front>
+         <seriesInfo name='RFC' value='6520' />
+       </reference>
+
+       <reference anchor='RFC6536'>
+         <front>
+           <title>
+             Network Configuration Protocol (NETCONF) Access
+             Control Model
+           </title>
+           <author initials='A.' surname='Bierman' 
+              fullname='A. Bierman'>
+             <organization>YumaWorks</organization>
+           </author>
+           <author initials='M.' surname='Bjorklund'
+              fullname='M. Bjorklund'>
+             <organization>Tail-f Systems</organization>
+           </author>
+           <date year='2012' month='March' />
+         </front>
+         <seriesInfo name='RFC' value='6536' />
+       </reference>
+
+       <reference anchor='RFC6991'>
+         <front>
+           <title>Common YANG Data Types</title>
+           <author initials='J.' surname='Schoenwaelder'
+              fullname='J. Schoenwaelder'>
+             <organization>Jacobs University</organization>
+           </author>
+           <date year='2013' month='July' />
+         </front>
+         <seriesInfo name='RFC' value='6991' />
+       </reference>
+        <reference anchor="RFC6241">
+          <front>
+            <title>NETCONF Configuration Protocol</title>
+            <author initials="R.E." surname="Enns"
+                    fullname="Rob Enns" role="editor">
+              <organization>Juniper Networks</organization>
+            </author>
+            <author initials="M.B." surname="Bjorklund"
+                    fullname="Martin Bjorklund" role="editor">
+              <organization>Tail-f Systems</organization>
+            </author>
+            <author initials="J.S." surname="Schoenwaelder"
+                    fullname="Juergen Schoenwaelder" role="editor">
+              <organization>Jacobs University</organization>
+            </author>
+            <author initials="A.B." surname="Bierman"
+                    fullname="Andy Bierman" role="editor">
+              <organization>Brocade</organization>
+            </author>
+            <date month="June" year="2011" />
+          </front>
+          <seriesInfo name="RFC" value="6241" />
+        </reference>
+
+        <reference anchor="RFC6242">
+          <front>
+            <title>Using the NETCONF Protocol over Secure Shell (SSH)</title>
+            <author initials="M.W." surname="Wasserman"
+                    fullname="Margaret Wasserman">
+              <organization>Painless Security, LLC</organization>
+            </author>
+            <date month="June" year="2011" />
+          </front>
+          <seriesInfo name="RFC" value="6242"/>
+        </reference>
+
+        <reference anchor='I-D.ietf-netconf-rfc5539bis'>
+          <front>
+            <title>
+              Using the NETCONF Protocol over Transport Layer
+              Security (TLS)
+            </title>
+            <author initials='M' surname='Badra' 
+               fullname='Mohamad Badra'>
+              <organization>LIMOS Laboratory</organization>
+            </author>
+            <author initials='A' surname='Luchuk'
+               fullname='Alan Luchuk'>
+              <organization>SNMP Research, Inc.</organization>
+            </author>
+            <author initials='J' surname='Schönwälder'
+               fullname='Jürgen Schönwälder'>
+              <organization>Jacobs University</organization>
+            </author>
+            <date month='October' day='21' year='2013' />
+          </front>
+          <seriesInfo name='Internet-Draft'
+                 value='draft-ietf-netconf-rfc5539bis-04' />
+        </reference>
+     
+       <reference anchor='I-D.ietf-netmod-snmp-cfg'>
+         <front>
+           <title>A YANG Data Model for SNMP Configuration</title>
+           <author initials='M' surname='Bjorklund' 
+              fullname='Martin Bjorklund'>
+             <organization>Tail-f Systems</organization>
+           </author>
+           <author initials='J' surname='Schönwälder'
+              fullname='Jürgen Schönwälder'>
+             <organization>Jacobs University</organization>
+           </author>
+           <date month='November' day='5' year='2013' />
+         </front>
+         <seriesInfo name='Internet-Draft' value='draft-ietf-netmod-snmp-cfg-03' />
+       </reference>
+
+       <reference anchor='draft-ieft-netconf-reverse-ssh'>
+         <front>
+           <title>
+             NETCONF over SSH Call Home
+           </title>
+           <author initials='K.W.' surname='Watsen'
+              fullname='Kent Watsen'>
+             <organization>Juniper Networks</organization>
+           </author>
+           <date month='May' day='17' year='2014' />
+         </front>
+         <seriesInfo name='Internet-Draft'
+                value='draft-ieft-netconf-reverse-ssh-00' />
+       </reference>
+
+       <reference anchor='draft-ietf-netmod-system-mgmt'>
+         <front>
+           <title>
+             A YANG Data Model for System Management
+           </title>
+           <author initials='A.B.' surname='Bierman'
+              fullname='Andy Bierman'>
+             <organization>YumaWorks</organization>
+           </author>
+           <date month='May' day='14' year='2014' />
+         </front>
+         <seriesInfo name='Internet-Draft'
+                value='draft-ieft-netmod-system-mgmt-16' />
+      </reference>
+
+      </references>
+      <references title="Informative References">
+
+        <reference anchor="RFC3688">
+          <front>
+            <title>The IETF XML Registry</title>
+            <author initials="M.M." surname="Mealling"
+                    fullname="Michael Mealling">
+              <organization>VeriSign Inc.</organization>
+            </author>
+            <date month="January" year="2004" />
+          </front>
+          <seriesInfo name="BCP" value="81" />
+          <seriesInfo name="RFC" value="3688"/>
+        </reference>
+      </references>
+      
+      <section title="Example: SSH Transport Configuration">
+        <t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(figures/ex-ssh.xml)
+]]></artwork>
+          </figure>
+        </t>
+      </section>
+
+      <section title="Example: TLS Transport Configuration">
+        <t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(figures/ex-tls.xml)
+]]></artwork>
+          </figure>
+        </t>
+      </section>
+
+      <section title="Example: TLS Authentication Configuration">
+        <t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(figures/ex-system-tls-auth.xml)
+]]></artwork>
+          </figure>
+        </t>
+      </section>
+
+
+      <section title="Change Log">
+        <section title="00 to 01">
+          <t>
+          <list style="symbols">
+            <t>Restructured document so it flows better</t>
+            <t>Added trusted-ca-certs and trusted-client-certs
+               objects into the ietf-system-tls-auth module</t>
+          </list>
+          </t>
+        </section>
+        <section title="01 to 02">
+          <t>
+          <list style="symbols">
+            <t>removed the "one-to-many" construct</t>
+            <t>removed "address" as a key field</t>
+            <t>removed "network-manager" terminology</t>
+          </list>
+          </t>
+        </section>
+
+
+      </section>
+ 
+      <section title="Open Issues">
+        <t>
+          <list style="symbols">
+            <t>NETCONF implementations typically have config
+            parameters such as session timeouts or hello
+            timeouts. Shall they be included in this model?</t>
+            <t>Do we need knobs to enable/disable call-home without
+            the need to remove all the call-home client
+            configuration?</t>
+          </list>
+        </t>
+      </section>
+    </back>
+</rfc>
+

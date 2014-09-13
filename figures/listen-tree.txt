@@ -1,0 +1,13 @@
+module: ietf-netconf-server
+   +--rw netconf-server
+      +--rw listen* [name]
+         +--rw name    string
+         +--rw (transport)
+            +--:(ssh) {ssh-listen}?
+            |  +--rw ssh
+            |     +--rw address    inet:host
+            |     +--rw port?      inet:port-number
+            +--:(tls) {tls-listen}?
+               +--rw tls
+                  +--rw address    inet:host
+                  +--rw port?      inet:port-number
