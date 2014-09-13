@@ -758,24 +758,11 @@ INSERT_TEXT_FROM_FILE(figures/ex-system-tls-auth.xml)
             <t>removed the "one-to-many" construct</t>
             <t>removed "address" as a key field</t>
             <t>removed "network-manager" terminology</t>
+            <t>moved open issues to github issues</t>
           </list>
           </t>
         </section>
 
-
-      </section>
- 
-      <section title="Open Issues">
-        <t>
-          <list style="symbols">
-            <t>NETCONF implementations typically have config
-            parameters such as session timeouts or hello
-            timeouts. Shall they be included in this model?</t>
-            <t>Do we need knobs to enable/disable call-home without
-            the need to remove all the call-home client
-            configuration?</t>
-          </list>
-        </t>
       </section>
     </back>
 </rfc>
