@@ -54,7 +54,7 @@ module ietf-netconf-server {
 
   // RFC Ed.: please update the date to the date of publication
 
-  revision "2014-01-24" {
+  revision "YYYY-MM-DD" {
     description
      "Initial version";
     reference
