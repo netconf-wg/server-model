@@ -205,41 +205,58 @@
 
         <section title="Data Model">
           <section title="Overview">
-              <t>To enable transports to configure listening on one
-              or more ports in a common way, the following subtree is defined.
-              This subtree defines SSH and TLS specific containers, each
-              of which refines the default listening port appropriately.
-              Further, each of these transport specific containers use a
-              feature statement, enabling NETCONF servers to accurately
-              advertise what they support.</t>
-              <t>
+            <t>To enable transports to configure listening on one
+            or more ports in a common way, the following subtree is defined.
+            This subtree defines SSH and TLS specific containers, each
+            of which refines the default listening port appropriately.
+            Further, each of these transport specific containers use a
+            feature statement, enabling NETCONF servers to accurately
+            advertise what they support.</t>
+            <t>
               <figure>
                 <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(figures/listen-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
 ]]></artwork>
               </figure>
-              </t>
+            </t>
 
-              <t>To enable transports to configure initiating connections
-              to remote applications in a common way, the following subtree is
-              defined.  This subtree configures a list of appliacations,
-              each with some transport-specific configuration augmented in.
-              Each of the transport specific containers use a feature 
-              statement, enabling NETCONF servers to accurately advertise
-              what they support.</t>
-              <t>
+            <t>To enable transports to configure initiating connections
+            to remote applications in a common way, the following subtree is
+            defined.  This subtree configures a list of appliacations,
+            each with some transport-specific configuration augmented in.
+            Each of the transport specific containers use a feature 
+            statement, enabling NETCONF servers to accurately advertise
+            what they support.</t>
+            <t>
               <figure>
                 <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(figures/call-home-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
 ]]></artwork>
               </figure>
-              </t>
+            </t>
+
+            <t>The following subtree illustrates how this YANG module
+            enables authentication of TLS client certificates and 
+            mapping TLS clients to NETCONF user names.  More
+            specifically, the "trusted-ca-certs" and 
+            "trusted-client-certs" containers are used to authenticate
+            TLS client certificates, while "cert-maps" and "psk-maps"
+            are used to map TLS clients to NETCONF user names.
+            </t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/tls-client-auth-tree.txt)
+]]></artwork>
+              </figure>
+            </t>
           </section>
 
 
           <section title="YANG Module">
             <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/>.</t>
+            target="RFC6991"/>, <xref target="RFC6536"/>, and
+            <xref target="draft-ietf-netmod-snmp-cfg"/>.</t>
             <t>
             <figure>
               <!--<preamble>The YANG Module</preamble>-->
@@ -344,7 +361,7 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
             <t>This YANG module imports YANG extensions from <xref
             target="RFC6536"/>, and imports YANG types from <xref
             target="RFC6991"/> and a YANG grouping from <xref
-            target="I-D.ietf-netmod-snmp-cfg"/>.</t>
+            target="draft-ietf-netmod-snmp-cfg"/>.</t>
             <t>
             <figure>
                 <!--<preamble>The YANG Module</preamble>-->
@@ -648,7 +665,7 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
                  value='draft-ietf-netconf-rfc5539bis-04' />
         </reference>
      
-       <reference anchor='I-D.ietf-netmod-snmp-cfg'>
+       <reference anchor='draft-ietf-netmod-snmp-cfg'>
          <front>
            <title>A YANG Data Model for SNMP Configuration</title>
            <author initials='M' surname='Bjorklund' 
@@ -711,36 +728,28 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
         </reference>
       </references>
       
-      <section title="Example: SSH Transport Configuration">
-        <t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(figures/ex-ssh.xml)
+      <section title="Examples">
+        <section title="SSH Transport Configuration">
+          <t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-ssh.xml)
 ]]></artwork>
-          </figure>
-        </t>
-      </section>
-
-      <section title="Example: TLS Transport Configuration">
-        <t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(figures/ex-tls.xml)
+            </figure>
+          </t>
+        </section>
+  
+        <section title="TLS Transport Configuration">
+          <t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
 ]]></artwork>
-          </figure>
-        </t>
+            </figure>
+          </t>
+        </section>
+  
       </section>
-
-      <section title="Example: TLS Authentication Configuration">
-        <t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(figures/ex-system-tls-auth.xml)
-]]></artwork>
-          </figure>
-        </t>
-      </section>
-
 
       <section title="Change Log">
         <section title="00 to 01">
@@ -759,10 +768,13 @@ INSERT_TEXT_FROM_FILE(figures/ex-system-tls-auth.xml)
             <t>removed "address" as a key field</t>
             <t>removed "network-manager" terminology</t>
             <t>moved open issues to github issues</t>
+            <t>brought TLS client auth back into model</t>
           </list>
           </t>
         </section>
-
+      </section>
+      <section title="Open Issues">
+        <t>Please see: https://github.com/netconf-wg/server-model/issues.</t>
       </section>
     </back>
 </rfc>

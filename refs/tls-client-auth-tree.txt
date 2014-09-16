@@ -1,0 +1,20 @@
+module: ietf-netconf-server
+   +--rw netconf-server
+      +--rw tls-client-auth
+         +--rw trusted-ca-certs
+         |  +--rw trusted-ca-cert*   binary
+         +--rw trusted-client-certs
+         |  +--rw trusted-client-cert*   binary
+         +--rw cert-maps {tls-map-certificates}?
+         |  +--rw cert-to-name* [id]
+         |     +--rw id             uint32
+         |     +--rw fingerprint    x509c2n:tls-fingerprint
+         |     +--rw map-type       identityref
+         |     +--rw name           string
+         +--rw psk-maps {tls-map-pre-shared-keys}?
+            +--rw psk-map* [psk-identity]
+               +--rw psk-identity        string
+               +--rw user-name           nacm:user-name-type
+               +--rw not-valid-before?   yang:date-and-time
+               +--rw not-valid-after?    yang:date-and-time
+               +--rw key                 yang:hex-string
