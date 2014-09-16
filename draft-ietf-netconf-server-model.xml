@@ -264,7 +264,7 @@ INSERT_TEXT_FROM_FILE(refs/tls-client-auth-tree.txt)
    RFC Ed.: update the date below with the date of RFC publication 
    and remove this note.
 
-   <CODE BEGINS> file "ietf-netconf-server.@YYYY-MM-DD.yang"
+   <CODE BEGINS> file "ietf-netconf-server@YYYY-MM-DD.yang"
 
 INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
 
@@ -328,57 +328,6 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
             needed the most.</t>
           </section>
 
-        </section>
-
-        <section title="User Authentication for TLS">
-          <section title="Introduction">
-            <t>The NETCONF Server Module defined in this draft focuses on the
-            configuration the SSH and TLS transports.  This module does not 
-            define a means to configure User Authentication, as that is a
-            stated focus for <xref target="draft-ietf-netmod-system-mgmt"/>,
-            however, that draft does not define configuration nodes for
-            TLS client authentication.  Thus, this draft also includes the 
-            following YANG module to augment TLS client authentication into 
-            the "ietf-system" module defined in 
-            <xref target="draft-ietf-netmod-system-mgmt"/>.</t>
-          </section>
-
-          <section title="Data Model Overview">
-            <t>This data model augments the "ietf-system" module
-            defined in <xref target="draft-ietf-netmod-system-mgmt"/> 
-            by adding some configuration nodes under its 
-            "/system/authentication" subtree.</t>
-            <t>
-            <figure>
-                <artwork><![CDATA[
-#NSERT_TEXT_FROM_FILE(ietf-system-tls-auth.yang.tree)
-  ]]></artwork>
-            </figure>
-            </t>
-          </section>
-
-          <section title="YANG Module">
-            <t>This YANG module imports YANG extensions from <xref
-            target="RFC6536"/>, and imports YANG types from <xref
-            target="RFC6991"/> and a YANG grouping from <xref
-            target="draft-ietf-netmod-snmp-cfg"/>.</t>
-            <t>
-            <figure>
-                <!--<preamble>The YANG Module</preamble>-->
-                <artwork><![CDATA[
-     RFC Ed.: update the date below with the date of RFC publication 
-     and remove this note.
-  
-     <CODE BEGINS> file "ietf-system-tls-auth.@2014-05-16.yang"
-  
-#NSERT_TEXT_FROM_FILE(ietf-system-tls-auth.yang)
-  
-     <CODE ENDS>
-  
-  ]]></artwork>
-            </figure>
-            </t>
-          </section>
         </section>
 
         <section title="Security Considerations">
