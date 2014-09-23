@@ -1,32 +1,36 @@
 module: ietf-netconf-server
    +--rw netconf-server
-      +--rw call-home
-         +--rw network-managers
-            +--rw network-manager* [name]
-               +--rw name                  string
-               +--rw description?          string
-               +--rw endpoints
-               |  +--rw endpoint* [address]
-               |     +--rw address    inet:host
-               |     +--rw port?      inet:port-number
-               +--rw transport
-               |  +--rw ssh {ssh-call-home}?
-               |  |  +--rw host-keys
-               |  |     +--rw host-key* [name]
-               |  |        +--rw name    string
-               |  +--rw tls! {tls-call-home}?
-               +--rw connection-type
-               |  +--rw (connection-type)?
-               |     +--:(persistent-connection)
-               |     |  +--rw persistent
-               |     |     +--rw keep-alives
-               |     |        +--rw interval-secs?   uint8
-               |     |        +--rw count-max?       uint8
-               |     +--:(periodic-connection)
-               |        +--rw periodic
-               |           +--rw timeout-mins?   uint8
-               |           +--rw linger-secs?    uint8
-               +--rw reconnect-strategy
-                  +--rw start-with?      enumeration
-                  +--rw interval-secs?   uint8
-                  +--rw count-max?       uint8
+      +--rw call-home* [name]
+         +--rw name                  string
+         +--rw (transport)
+         |  +--:(ssh) {ssh-call-home}?
+         |  |  +--rw ssh
+         |  |     +--rw endpoints
+         |  |     |  +--rw endpoint* [name]
+         |  |     |     +--rw name       string
+         |  |     |     +--rw address    inet:host
+         |  |     |     +--rw port?      inet:port-number
+         |  |     +--rw host-key* [name]
+         |  |        +--rw name    string
+         |  +--:(tls) {tls-call-home}?
+         |     +--rw tls
+         |        +--rw endpoints
+         |           +--rw endpoint* [name]
+         |              +--rw name       string
+         |              +--rw address    inet:host
+         |              +--rw port?      inet:port-number
+         +--rw connection-type
+         |  +--rw (connection-type)?
+         |     +--:(persistent-connection)
+         |     |  +--rw persistent
+         |     |     +--rw keep-alives
+         |     |        +--rw interval-secs?   uint8
+         |     |        +--rw count-max?       uint8
+         |     +--:(periodic-connection)
+         |        +--rw periodic
+         |           +--rw timeout-mins?   uint8
+         |           +--rw linger-secs?    uint8
+         +--rw reconnect-strategy
+            +--rw start-with?      enumeration
+            +--rw interval-secs?   uint8
+            +--rw count-max?       uint8

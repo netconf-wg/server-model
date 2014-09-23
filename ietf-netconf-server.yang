@@ -236,7 +236,7 @@ module ietf-netconf-server {
             ordered-by user;
             description
               "User-ordered list of host-keys the SSH server
-               should advertize.";
+               should advertise.";
             leaf name {
               type string;
               mandatory true;
