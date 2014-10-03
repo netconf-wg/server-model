@@ -186,10 +186,10 @@ module ietf-netconf-server {
        open one or more ports to listen for incoming client
        connections.";
     leaf address {
-      type inet:host;
+      type inet:ip-address;
       mandatory true;
       description
-       "The local IP address/name of the interface to listen on.";
+       "The IP address of the interface to listen on.";
     }
     leaf port {
       type inet:port-number;
@@ -286,12 +286,12 @@ module ietf-netconf-server {
           type inet:host;
           mandatory true;
           description
-           "The hostname or IP address of the endpoint.
-           If a hostname is provided and DNS resolves to
-           more than one IP address, the device SHOULD
-           try all of the ones it can based on how its
-           networking stack is configured (e.g. v4, v6, 
-           dual-stack).";
+           "The hostname or IP address or hostname of the 
+            endpoint.  If a hostname is provided and DNS 
+            resolves to more than one IP address, the device
+            SHOULD try all of the ones it can based on how 
+            its networking stack is configured (e.g. v4, v6, 
+            dual-stack).";
         }
         leaf port {
           type inet:port-number;

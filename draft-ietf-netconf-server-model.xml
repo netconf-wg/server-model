@@ -55,8 +55,8 @@
             <t>This draft defines a NETCONF server configuration data model.
             This data model enables configuration of the NETCONF service
             itself, including which transports it supports, what ports
-            they listen on, whether they support device-initiated 
-            connections, and associated parameters.</t>
+            they listen on, whether call-home is supported, and associated
+            parameters.</t>
         </abstract>
     </front>
     <middle>
@@ -66,7 +66,7 @@
             configuration data model.
             This data model enables configuration of the NETCONF service
             itself, including which transports are supported, what ports
-            does the server listen on, whether call-home is supported, and
+            the server listens on, whether call-home is supported, and
             associated parameters.</t>
             <section title="Terminology">
               <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL",
@@ -95,15 +95,16 @@
 
         <section title="Objectives">
           <t>The primary purpose of the YANG module defined herein is
-          to enable the configuration of the NETCONF service on the
-          device.  This scope includes the following objectives:</t>
+          to enable the configuration of the NETCONF communication 
+          service on the device.  This scope includes the following 
+          objectives:</t>
           <section title="Support all NETCONF Transports">
             <t>The YANG module should support all current NETCONF
             transports, namely NETCONF over SSH <xref
             target="RFC6242"/> and NETCONF over TLS <xref
             target="rfc5539bis"/>, and be extensible
             to support future transports as necessary.</t>
-            <t>Since implementations may not support all transports,
+            <t>Because implementations may not support all transports,
             the module should use YANG &quot;feature&quot; statements
             so that implementations can accurately advertise which
             transports are supported.</t>
@@ -122,7 +123,7 @@
             (<xref target="draft-ietf-netconf-call-home"/>).  The
             module should configure both listening for connections
             and call-home.</t>
-            <t>Since implementations may not support both listening for
+            <t>Because implementations may not support both listening for
             connections and call home, YANG &quot;feature&quot; statements
             should be used so that implementation can accurately 
             advertise the connection types it supports.</t>
@@ -143,7 +144,7 @@
               high-availability strategy employing a multiplicity of
               active and/or passive servers.  Therefore, when it is
               desired for a device to initiate call home connections,
-              it should be able to connect to any of the applications
+              it should be able to connect to any of the application's
               servers.</t>
             </section>
             <section title="Support a Reconnection Strategy">
@@ -185,11 +186,11 @@
             <section anchor="keepalives" title="Keep-Alives for Persistent Connections">
               <t>If a persistent connection is desired, it is the 
               responsibility of the connection-initiator to actively
-              test the aliveness of the connection.  The connection
+              test the "aliveness" of the connection.  The connection
               initiator must immediately work to reestablish a 
               persistent connection as soon as the connection is
               lost.  How often the connection should be tested is
-              driven by applications requirements, and therefore
+              driven by application requirements, and therefore
               keep-alive settings should be configurable on a 
               per-application basis.</t>
             </section>
