@@ -262,10 +262,10 @@ INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
             <t>The following subtree illustrates how this YANG module
             enables authentication of TLS client certificates and 
             mapping TLS clients to NETCONF user names.  More
-            specifically, the "trusted-ca-certs" and 
-            "trusted-client-certs" containers are used to authenticate
-            TLS client certificates, while "cert-maps" and "psk-maps"
-            are used to map TLS clients to NETCONF user names.
+            specifically, "trusted-ca-certs" and "trusted-client-certs"
+            lists are used to authenticate TLS client certificates,
+            while the "cert-maps" list is used to map authenticated
+            TLS client certificates to NETCONF user names.
             </t>
             <t>
               <figure>
@@ -593,6 +593,14 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
           <t>
             <list style="symbols">
               <t>fixed tree diagrams and surrounding text</t>
+            </list>
+          </t>
+        </section>
+        <section title="03 to 04">
+          <t>
+            <list style="symbols">
+              <t>reduced the number of grouping statements</t>
+              <t>removed psk-maps and associated feature statements</t>
             </list>
           </t>
         </section>
