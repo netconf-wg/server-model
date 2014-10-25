@@ -3,22 +3,21 @@
 OUT=$1.tmp
 
 cat > $OUT <<EOF
-<rpc xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'
-     message-id='101'>
-  <edit-config>
-    <target>
-      <running/>
-    </target>
-    <config>
-EOF
-cat $1 >> $OUT
-cat >> $OUT <<EOF
-    </config>
-  </edit-config>
-</rpc>
+<rpc-reply message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <data>
 EOF
 
-yang2dsdl -t edit-config -v $OUT $2 $3
+cat $1 >> $OUT
+
+cat >> $OUT <<EOF
+  </data>
+</rpc-reply>
+EOF
+
+yang2dsdl -t get-reply ../ietf-netconf-server.yang
+
+xmllint --noout --relaxng ietf-netconf-server-get-reply.rng  $OUT 
 
 rm $OUT
+rm *.rng *.dsrl *.sch
 

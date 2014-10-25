@@ -1,0 +1,9 @@
+module: ietf-netconf-server
+   +--rw netconf-server
+      +--rw ssh
+         +--rw host-keys
+            +--ro host-key* [name]
+               +--ro name                 string
+               +--ro format-identifier    string
+               +--ro data                 binary
+               +--ro fingerprint          string

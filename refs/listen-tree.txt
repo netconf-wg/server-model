@@ -12,3 +12,6 @@ module: ietf-netconf-server
                   +--rw tls
                      +--rw address    inet:ip-address
                      +--rw port?      inet:port-number
+                     +--rw certificates
+                        +--rw certificate*   string
+

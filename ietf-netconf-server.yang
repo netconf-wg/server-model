@@ -130,22 +130,7 @@ module ietf-netconf-server {
                   default 830;
                 }
               }
-/* fail.  config=true leafref can't point to config=false node
-              container host-keys {
-                description
-                  "Parent container for the list of host-keys.";
-                leaf-list host-key {
-                  type leafref {
-                    path "/netconf-server/ssh/host-keys/host-key/name";
-                  }
-                  min-elements 1;
-                  ordered-by user;
-                  description
-                    "User-ordered list of host-keys the SSH server 
-                     advertizes when negotiating a new session.";
-                }
-              }
-*/
+              uses host-keys-container;
             }
           }
           case tls {
@@ -159,6 +144,7 @@ module ietf-netconf-server {
                   default 6513;
                 }
               }
+              uses certificates-container;
             }
           }
         }
@@ -197,6 +183,7 @@ module ietf-netconf-server {
                   default 8888;  // pending IANA assignment
                 }
               }
+              uses host-keys-container;
             }
           }
           case tls {
@@ -205,11 +192,12 @@ module ietf-netconf-server {
               description
                 "Specifies TLS-specific call-home transport
                  configuration.";
-              uses call-home-per-transport-config {
+              uses endpoints-container {
                 refine endpoints/endpoint/port {
                   default 9999;  // pending IANA assignment
                 }
               }
+              uses certificates-container;
             }
           }
         }
@@ -374,7 +362,6 @@ module ietf-netconf-server {
         "Configures SSH properties not specific to the listen 
          or call-home use-cases";
       //if-feature "(ssh-listen or ssh-call-home)";
-/* fail. config=true leafref can't point to config=false node
       container host-keys {
         description
           "Parent container for a list of host keys";
@@ -416,7 +403,6 @@ module ietf-netconf-server {
           }
         }     
       }
-*/
     }
   }
 
@@ -429,7 +415,6 @@ module ietf-netconf-server {
         "Configures TLS properties not specific to the listen 
          or call-home use-cases";
       //if-feature "(tls-listen or tls-call-home)";
-/* fail. config=true leafref can't point to config=false node
       container certificates {
         description
           "Parent container for a list of certificates";
@@ -453,7 +438,6 @@ module ietf-netconf-server {
           }
         }
       }
-*/
       container client-auth {
         description
           "Container for TLS client authentication configuration.";
@@ -516,6 +500,49 @@ module ietf-netconf-server {
   }
 
 
+  grouping host-keys-container {
+    description
+      "";
+    container host-keys {
+      description
+        "Parent container for the list of host-keys.";
+      leaf-list host-key {
+        type string;
+        min-elements 1;
+        ordered-by user;
+        description
+          "User-ordered list of host-keys the SSH server 
+           considers when composing the list of  server
+           host key algorithms it will send to the client.
+           The value of the string is the name of a 
+           host-key configured on the system, as returned
+           by /netconf-server/ssh/host-keys/host-key/name.";
+        reference
+          "RFC 4253: The SSH Transport Layer Protocol, Section 7";
+      }
+    }
+  }
+
+  grouping certificates-container {
+    description
+      "";
+    container certificates {
+      description
+        "Parent container for the list of certificates.";
+      leaf-list certificate {
+        type string;
+        min-elements 1;
+        description
+          "Unordered list of certificates the TLS server can
+           pick from when sending its Server Certificate
+           message.  The value of the string is the name of a
+           certificate configured on the system, as returned by
+           /netconf-server/tls/certificates/certificate/name";
+        reference
+          "RFC 5246: The TLS Protocol, Section 7.4.2";
+      }
+    }
+  }
 
   grouping address-and-port-grouping {
     description

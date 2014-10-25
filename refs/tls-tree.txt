@@ -1,0 +1,18 @@
+module: ietf-netconf-server
+   +--rw netconf-server
+      +--rw tls
+         +--rw certificates
+         |  +--ro certificate* [name]
+         |     +--ro name    string
+         |     +--ro data    binary
+         +--rw client-auth
+            +--rw trusted-ca-certs
+            |  +--rw trusted-ca-cert*   binary
+            +--rw trusted-client-certs
+            |  +--rw trusted-client-cert*   binary
+            +--rw cert-maps
+               +--rw cert-to-name* [id]
+                  +--rw id             uint32
+                  +--rw fingerprint    x509c2n:tls-fingerprint
+                  +--rw map-type       identityref
+                  +--rw name           string

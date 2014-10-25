@@ -1,23 +1,89 @@
 <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
   <listen>
-    <name>foo bar</name>
-    <ssh>
-      <port>831</port>
-    </ssh>
+    <endpoint>
+      <name>foo bar</name>
+      <ssh>
+        <address>11.22.33.44</address>
+        <host-keys>
+          <host-key>my-rsa-key</host-key>
+          <host-key>my-dss-key</host-key>
+        </host-keys>
+      </ssh>
+    </endpoint>
   </listen>
   <call-home>
-    <name>config-mgr</name>
-    <ssh>
-      <endpoints>
-        <endpoint>
-          <name>east-data-center</name>
-          <address>11.22.33.44</address>
-        </endpoint>
-        <endpoint>
-          <name>west-data-center</name>
-          <address>55.66.77.88</address>
-        </endpoint>
-      </endpoints>
-     </ssh>
+    <application>
+      <name>config-mgr</name>
+      <ssh>
+        <endpoints>
+          <endpoint>
+            <name>east-data-center</name>
+            <address>11.22.33.44</address>
+          </endpoint>
+          <endpoint>
+            <name>west-data-center</name>
+            <address>55.66.77.88</address>
+          </endpoint>
+        </endpoints>
+        <host-keys>
+          <host-key>my-call-home-x509-key</host-key>
+        </host-keys>
+      </ssh>
+    </application>
   </call-home>
+  <ssh>
+    <host-keys>
+      <host-key>
+        <name>my-rsa-key</name>
+        <format-identifier>ssh-rsa</format-identifier>
+        <data>  <!-- base64 reformated for draft -->
+          AAAAB3NzaC1yc2EAAAABIwAAAQEA7D2lxYg3+WD97RZqZtO8bUU8QpIl6g9
+          X11kZHZ8NgSIR+x2H1MHCD5sEjmx/B6JIouK5eBvbJE9FFV3phsl62fupN6
+          Y4EmXosC6iqpuI41dcGA63XCQ1OenWG4ppdq1f8tlecSrmEcLw7MKPzBHK6
+          rNQTciqMuVuLPOKwBu/54QAiUwvvHKAsk8bkN9YxEJ1NTV1FFQmvMOADVcD
+          2qqPangETwV5zInW8AEkBbLccM/mmHucGNS81axXR3V9R5KgXF2DyGB47d2
+          k6iOnGa3LBIOYi/5Q+O8IFUlO+kytfqwuFgUc+Mx7aKReSIAPov3owVjeBL
+          KWsvjD24UO68qtwQ==
+        </data>
+        <fingerprint>
+          c1:b1:30:29:d7:b8:de:6c:97:77:10:d7:46:41:63:87
+        </fingerprint>
+      </host-key>
+      <host-key>
+        <name>my-dss-key</name>
+        <format-identifier>ssh-dss</format-identifier>
+        <data>  <!-- base64 reformated for draft -->
+          AAAAB3NzaC1kc3MAAACBAIq7XfGmZKJgibJEIMzj70YMVfpeewBCj89VrUS
+          gLsJmxP/TrXFuhzW2UIaI8sePMYUXj/Vgp5DUD+eBSBkHMH4ga0U5t/clqn
+          y73x8Vg6LQg9f0OTaUnpRWbWrdac7U5/BRBTtMA3amHZhHrKs7BrCepS/y8
+          cUbxBCPF3aYMK/5AAAAFQC7wetEbDwghYtz8Z3xIwDdxs6mOwAAAIBursEk
+          jnvs5zzyUH7iNiyBojDoyrsq81jPM6KopkfA5Ypp2KTySPev/mkL0SoVfIb
+          +HttVfQ3Q63+sf1Qyk+gUtniSdN2AqtFQYKxtTcXim4McWk6IixkYFP8kkt
+          02t9Hsl0eXvltmogrlRsiuJsTAbFS+QTeq4OGTODCT5jjVdQAAAIA2llpZg
+          y5v46lGt4dQhkH8ytyMGyjBRPF6rm51msinX3lMR9xfwTaS7ZYP0b6HJt5M
+          sQI+m7iIYaVFB1oC8niXbkkavLcxhGpNVkwE2INWS4TIBbTQhivuoE+dMYY
+          KauLQxqSUjixJk3LjhCQb
+        </data>
+        <fingerprint>
+          c1:b1:30:29:d7:b8:de:6c:97:77:10:d7:46:41:63:87
+        </fingerprint>
+      </host-key>
+      <host-key>
+        <name>my-call-home-x509-key</name>
+        <format-identifier>x509v3-rsa2048-sha256</format-identifier>
+        <data>    <!-- base64 reformated for draft -->
+          AAAAB3NzaC1yc2EAAAABIwAAAQEAyBLl90dPUGX7Es12q7YKkw6v8WgWop+
+          B62zhT39C+yvslMIwIqgHYii0h/TGktahKpBwssawfhvAZoMF/nOyO3yDPD
+          pQxNrA76H7owNOjG5206QHDYfVALKPvxgrDy/6BjsR9MayOGkZTSL6GRFSl
+          g7ivT9AIR9E5qXmP+1z+IDufRlpwfaGfpZAxjJLEwzAjFAIwXsXKJ5FH/QP
+          mfC6gxfhqpt9rJCDlgqmzrXi8dXKsFUC3/o1lzezqTXTV1iMETTuCHgWegF
+          5QcX2baBdFgCnkd1SnftVoBHVnvXA1euRqgiG3fMNK4rct0D99D+GI+kZc+
+          vQyUdCw3dPlhXPZw==
+        </data>
+        <fingerprint>
+          97:77:10:29:d7:b8:de:6c:97:77:30:29:d7:41:63:87
+        </fingerprint>
+      </host-key>
+    </host-keys>
+  </ssh>
 </netconf-server>

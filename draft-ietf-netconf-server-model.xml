@@ -218,62 +218,83 @@
 
         <section title="Data Model">
           <section title="Overview">
-            <t>The following subtree illustrates how this YANG module
-            enables configuration for listening for remote connections,
-            as described in <xref target="RFC6242"/> and <xref
-            target="rfc5539bis"/>.  Feature statements are used to limit both
-            if listening is supported at all as well as for which transports.
-            If listening for connections is supported, then the model 
-            enables configuring a list of listening endpoints, each 
-            configured with a
-            user-specified name (the key field), the transport to use 
-            (i.e. SSH, TLS), and the IP address and port to listen on.
-            The port field is optional, defaulting to the transport-specific
-            port when not configured.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
+            <section title="The listen Subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+  INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
+  ]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how this YANG module
+              enables configuration for listening for remote connections,
+              as described in <xref target="RFC6242"/> and <xref
+              target="rfc5539bis"/>.  Feature statements are used to limit both
+              if listening is supported at all as well as for which transports.
+              If listening for connections is supported, then the model 
+              enables configuring a list of listening endpoints, each 
+              configured with a
+              user-specified name (the key field), the transport to use 
+              (i.e. SSH, TLS), and the IP address and port to listen on.
+              The port field is optional, defaulting to the transport-specific
+              port when not configured.</t>
 
-            <t>The following subtree illustrates how this YANG module
-            enables configuration for call home, as described in 
-            <xref target="draft-ietf-netconf-call-home"/>.  Feature 
-            statements are used to limit both if call-home is supported
-            at all as well as for which transports, if it is.  If call-home
-            is supported, then the model supports configuring a list of
-            applications to connect to.  Each application is configured
-            with a user-specified name (the key field), the transport to
-            be used (i.e. SSH, TLS), and a list of remote endpoints, each
-            having a name, an IP address, and an optional port.  Additionally,
-            the configuration for each remote application indicates the
-            connection-type (persistent vs. periodic) and associated 
-            parameters, as well as the reconnection strategy to use.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
+            </section>
+            <section title="The call-home Subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+  INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
+  ]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how this YANG module
+              enables configuration for call home, as described in 
+              <xref target="draft-ietf-netconf-call-home"/>.  Feature 
+              statements are used to limit both if call-home is supported
+              at all as well as for which transports, if it is.  If call-home
+              is supported, then the model supports configuring a list of
+              applications to connect to.  Each application is configured
+              with a user-specified name (the key field), the transport to
+              be used (i.e. SSH, TLS), and a list of remote endpoints, each
+              having a name, an IP address, and an optional port.  Additionally,
+              the configuration for each remote application indicates the
+              connection-type (persistent vs. periodic) and associated 
+              parameters, as well as the reconnection strategy to use.</t>
 
-            <t>The following subtree illustrates how this YANG module
-            enables authentication of TLS client certificates and 
-            mapping TLS clients to NETCONF user names.  More
-            specifically, "trusted-ca-certs" and "trusted-client-certs"
-            lists are used to authenticate TLS client certificates,
-            while the "cert-maps" list is used to map authenticated
-            TLS client certificates to NETCONF user names.
-            </t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/tls-client-auth-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
+            </section>
+            <section title="The ssh Subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+  INSERT_TEXT_FROM_FILE(refs/ssh-tree.txt)
+  ]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how this YANG module
+              provides SSH state independent of if the NETCONF server if 
+              listening or calling home.  This data-model provides a 
+              read-only listing of currently configured TLC certificates.</t>
+            </section>
+
+
+            <section title="The tls Subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+  INSERT_TEXT_FROM_FILE(refs/tls-tree.txt)
+  ]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how this YANG module
+              provides TLS state and enables TLS configuration independent
+              of if the NETCONF server if listening or calling home.
+              This data-model provides 1) a read-only listing of currently
+              configured TLC certificates and 2) an ability to configure
+              how client-certificates are authenicated and how authenticated
+              client-certificates are mapped to NETCONF user names.</t>
+
+            </section>
           </section>
 
 
@@ -546,7 +567,13 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
       </references>
       
       <section title="Examples">
-        <section title="SSH Transport Configuration">
+        <section title="SSH Transport Configuration + State">
+          <t>
+            The following example illustrastes the &lt;get&gt; response from a NETCONF server
+            that only supports SSH, both listening for incoming connections as well as 
+            calling home to a single application having two endpoints.  Please also note
+            that the list of host-keys at the end is read-only operational state.
+          </t>
           <t>
             <figure>
               <artwork><![CDATA[
@@ -556,7 +583,14 @@ INSERT_TEXT_FROM_FILE(refs/ex-ssh.xml)
           </t>
         </section>
   
-        <section title="TLS Transport Configuration">
+        <section title="TLS Transport Configuration + State">
+          <t>
+            The following example illustrastes the &lt;get&gt; response from a NETCONF server
+            that only supports TLS, both listening for incoming connections as well as 
+            calling home to a single application having two endpoints.  Please note also
+            the configurations for authenticating client certificates and mappings
+            authenticated certificates to NETCONF user names.
+          </t>
           <t>
             <figure>
               <artwork><![CDATA[
@@ -601,6 +635,8 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
             <list style="symbols">
               <t>reduced the number of grouping statements</t>
               <t>removed psk-maps and associated feature statements</t>
+              <t>added ability for listen/call-home instances to specify
+                 which host-keys/certificates (of all listed) to use</t>
             </list>
           </t>
         </section>

@@ -7,17 +7,21 @@ module: ietf-netconf-server
             |  +--:(ssh) {ssh-call-home}?
             |  |  +--rw ssh
             |  |     +--rw endpoints
-            |  |        +--rw endpoint* [name]
-            |  |           +--rw name       string
-            |  |           +--rw address    inet:host
-            |  |           +--rw port?      inet:port-number
+            |  |     |  +--rw endpoint* [name]
+            |  |     |     +--rw name       string
+            |  |     |     +--rw address    inet:host
+            |  |     |     +--rw port?      inet:port-number
+            |  |     +--rw host-keys
+            |  |        +--rw host-key*   string
             |  +--:(tls) {tls-call-home}?
             |     +--rw tls
             |        +--rw endpoints
-            |           +--rw endpoint* [name]
-            |              +--rw name       string
-            |              +--rw address    inet:host
-            |              +--rw port?      inet:port-number
+            |        |  +--rw endpoint* [name]
+            |        |     +--rw name       string
+            |        |     +--rw address    inet:host
+            |        |     +--rw port?      inet:port-number
+            |        +--rw certificates
+            |           +--rw certificate*   string
             +--rw connection-type
             |  +--rw (connection-type)?
             |     +--:(persistent-connection)
