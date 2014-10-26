@@ -445,19 +445,21 @@ module ietf-netconf-server {
         container trusted-ca-certs {
           description
             "A list of Certificate Authority (CA) certificates that
-             a NETCONF server can use to authenticate the  NETCONF 
-             client certificate.  A client's certificate is 
-             authenticated if its Issuer matches one of the 
-             configured trusted CA certificates.";
+             a NETCONF server can use to authenticate NETCONF client
+             certificates.  A client's certificate is authenticated 
+             if there is a chain of trust to a configured trusted CA 
+             certificate.  Note, in the TLS protocol, the client 
+             certificate MAY be accompanied with additional 
+             certificates forming a chain of trust.  The client's
+             certificate is authenticated if there is path-validation
+             from any of the certificates it presents to a configured
+             trust anchor.";
           leaf-list trusted-ca-cert {
             type binary;
             ordered-by system;
             description
-              "The binary certificate structure, as
-               specified by RFC 5246, Section 7.4.6, i.e.,:
-    
-                 opaque ASN.1Cert<1..2^24>;
-    
+              "The binary certificate structure as specified by RFC 5246
+               Section 7.4.6, i.e.,: opaque ASN.1Cert<1..2^24>;
               ";
             reference
               "RFC 5246: The Transport Layer Security (TLS)

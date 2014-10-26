@@ -653,6 +653,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
               <t>added missing "objectives" for selecting which keys to use,
                  authenticating client-certificates, and mapping authenticated
                  client-certificates to usernames</t>
+              <t>clarified indirect client certificate authentication</t>
             </list>
           </t>
         </section>
