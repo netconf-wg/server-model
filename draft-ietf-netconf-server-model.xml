@@ -95,10 +95,10 @@
 
         <section title="Objectives">
           <t>The primary purpose of the YANG module defined herein is
-          to enable the configuration of the NETCONF communication 
+          to enable the configuration of the NETCONF server 
           service on the device.  This scope includes the following 
           objectives:</t>
-          <section title="Support all NETCONF Transports">
+          <section title="Support all NETCONF transports">
             <t>The YANG module should support all current NETCONF
             transports, namely NETCONF over SSH <xref
             target="RFC6242"/> and NETCONF over TLS <xref
@@ -109,14 +109,25 @@
             so that implementations can accurately advertise which
             transports are supported.</t>
           </section>
-          <section title="Align Transport-Specific Configurations">
-            <t>While each transport is unique in its protocol and
-            may have some distinct configurations, there remains
-            a significant overlap between them.  Thus the YANG module
-            should use &quot;grouping&quot; statements so that the
-            common aspects can be configured similarly.</t>
+          <section title="Enable each transport to select which keys to use">
+            <t>Systems may have a multiplicity of host-keys or server-certificates
+               from which subsets are configured for specific uses.  For instance,
+               a system may want to use one set of SSH host-keys when listening
+               on port 830, and a different set of SSH host-keys when calling
+               home.</t>
           </section>
-          <section title="Support both Listening for Connections and Call Home">
+          <section title="Support authenticating client-certificates">
+            <t>When certificates are used to authenticate NETCONF clients, there is a need to 
+               configure the system to know how to authenticate the certificates.  The system 
+               should be able to do this either by using path-validation to a configured trust 
+               anchor or by matching the client-certificate to one previously configured.</t>
+          </section>
+          <section title="Support mapping authenticated client-certificates to usernames">
+            <t>Some transports (e.g., TLS) need additional support to map authenticated
+               transport-level sessions to a NETCONF username.  The NETCONF server model
+               defined herein should define an ability for this mapping to be configured."</t>
+          </section>
+          <section title="Support both Listening for connections and Call Home">
             <t>NETCONF has always supported the server opening
             a port to listen for client connections.  More recently
             the NETCONF working group defined support for call-home 
@@ -128,10 +139,10 @@
             should be used so that implementation can accurately 
             advertise the connection types it supports.</t>
           </section>
-          <section title="For Call Home Connections">
+          <section title="For Call Home connections">
             <t>The following objectives only pertain to call home
              connections.</t>
-            <section title="Support More than One Application">
+            <section title="Support more than one application">
               <t>A device may be managed by more than one northbound
               application.  For instance, a deployment may have one
               application for provisioning and another for fault
@@ -139,7 +150,7 @@
               to initiate call home connections, it should be able to
               do so for more than one application.</t>
             </section>
-            <section title="Support Applications Having More than One Server">
+            <section title="Support applications having more than one server">
               <t>An application managing a device may implement a 
               high-availability strategy employing a multiplicity of
               active and/or passive servers.  Therefore, when it is
@@ -147,7 +158,7 @@
               it should be able to connect to any of the application's
               servers.</t>
             </section>
-            <section title="Support a Reconnection Strategy">
+            <section title="Support a reconnection strategy">
               <t>Assuming an application has more than one server, then
               it becomes necessary to configure how a device should
               reconnect to the application should it lose its 
@@ -159,7 +170,7 @@
               attempts and number of attempts per server.  Therefore,
               a reconnection strategy should be configurable.</t>
             </section>
-            <section title="Support both Persistent and Periodic Connections">
+            <section title="Support both persistent and periodic connections">
               <t>Applications may vary greatly on how frequently they
               need to interact with a device, how responsive interactions
               with devices need to be, and how many simultaneous connections
@@ -170,7 +181,7 @@
               for devices to initiate connections, the type of connection
               desired should be configured.</t>
             </section>
-            <section title="Reconnection Strategy for Periodic Connections">
+            <section title="Reconnection strategy for periodic connections">
               <t>The reconnection strategy should apply to both 
               persistent and periodic connections.  How it
               applies to periodic connections becomes clear when
@@ -183,7 +194,7 @@
               which time the reconnection strategy guides how to
               connect to another server.</t>
             </section>
-            <section anchor="keepalives" title="Keep-Alives for Persistent Connections">
+            <section anchor="keepalives" title="Keep-alives for persistent connections">
               <t>If a persistent connection is desired, it is the 
               responsibility of the connection-initiator to actively
               test the "aliveness" of the connection.  The connection
@@ -194,7 +205,7 @@
               keep-alive settings should be configurable on a 
               per-application basis.</t>
             </section>
-            <section title="Customizations for Periodic Connections">
+            <section title="Customizations for periodic connections">
               <t>If a periodic connection is desired, it is necessary
               for the device to know how often it should connect.  This
               delay essentially determines how long the 
@@ -321,19 +332,19 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
           </section>
         </section>
 
-        <section title="Keep-Alives for SSH and TLS">
-          <t>One the objectives listed above, <xref target="keepalives">
-          Keep-Alives for Persistent Connections</xref> indicates a need
+        <section title="Implementation strategy for keep-alives">
+          <t>One of the objectives listed above, <xref target="keepalives">
+          Keep-alives for persistent connections</xref>, indicates a need
           for a "keep-alive" mechanism.  This section specifies how the
-          NETCONF keep-alive mechanism is to be implemented.</t>
+          NETCONF keep-alive mechanism is to be implemented for both the
+          SSH and TLS transports.</t>
 
-          <t>Both SSH and TLS have the ability to support keep-alives.
-          Using these mechanisms, the keep-alive messages are sent inside
-          the encrypted tunnel, thus thwarting spoof attacks.</t>
+          <t>Both SSH and TLS have the ability to support keep-alives securely.
+          Using the strategies listed below, the keep-alive messages are sent
+          inside the encrypted transport sessions.</t>
 
-          <section title="SSH">
+          <section title="Keep-alives for SSH">
             <t>The SSH keep-alive solution that is expected to be used
-            when configured using the data model defined in this document
             is ubiquitous in practice, though never being explicitly defined
             in an RFC.  The strategy used is to purposely send a malformed
             request message with a flag set to ensure a response.  More
@@ -347,30 +358,31 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
             SSH_MSG_CHANNEL_FAILURE response.</t>
 
             <t>To ensure that the request will fail, current implementations
-            send an invalid "request name" or "request type", respectively.
-            Abiding to the extensibility guidelines specified in Section 6
+            of this keep-alive strategy (e.g. OpenSSH's `sshd` server) send an
+            invalid "request name" or "request type", respectively.  Abiding 
+            to the extensibility guidelines specified in Section 6
             of <xref target="RFC4251"/>, these implementations use the 
             "name@domain".  For instance, when configured to send keep-alives,
             OpenSSH sends the string "keepalive@openssh.com".  In order to
             remain compatible with existing implementations, this draft does
             not require a specific "request name" or "request type" string
-            be used.</t>
+            be used, implementations are free to pick values of their choosing.</t>
           </section>
 
-          <section title="TLS">
-            <t>The TLS keep-alive solution is defined in <xref target="RFC6520"/>.  
+          <section title="Keep-alives for TLS">
+            <t>The TLS keep-alive solution that is expected to be used is
+            defined in <xref target="RFC6520"/>.  
             This solution allows both peers to advertise if they can
             receive heartbeat request messages from its peer.  
             For standard NETCONF over TLS connections, devices SHOULD
             advertise "peer_allowed_to_send", as per <xref target="RFC6520"/>.
             This advertisement is not a "MUST" in order to grandfather
             existing NETCONF over TLS implementations.
-            For NETCONF over TLS Call Home, the network management
+            For NETCONF Call Home, the network management
             system MUST advertise "peer_allowed_to_send" per
             <xref target="RFC6520"/>.  This is a "MUST" so as to ensure
             devices can depend in it always being there for call home
-            connections, which is conveniently when keep-alives are
-            needed the most.</t>
+            connections, which is when keep-alives are needed the most.</t>
           </section>
 
         </section>
@@ -638,6 +650,9 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
               <t>added ability for listen/call-home instances to specify
                  which host-keys/certificates (of all listed) to use</t>
               <t>clarified that last-connected should span reboots</t>
+              <t>added missing "objectives" for selecting which keys to use,
+                 authenticating client-certificates, and mapping authenticated
+                 client-certificates to usernames</t>
             </list>
           </t>
         </section>
