@@ -47,7 +47,7 @@ ifeq (org,$(draft_type))
 endif
 
 $(next).xml: $(draft).xml
-	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
+	sed -e"s/$(basename $<)-latest/$(basename $@)/" -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" $< > $@
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
