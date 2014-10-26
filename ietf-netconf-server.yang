@@ -320,7 +320,8 @@ module ietf-netconf-server {
               enum last-connected { 
                 description
                   "Indicates that reconnections should start with
-                   the endpoint last connected to.";
+                   the endpoint last connected to.  NETCONF servers
+                   SHOULD support this flag across reboots.";
               }
             }
             default first-listed;

@@ -637,6 +637,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
               <t>removed psk-maps and associated feature statements</t>
               <t>added ability for listen/call-home instances to specify
                  which host-keys/certificates (of all listed) to use</t>
+              <t>clarified that last-connected should span reboots</t>
             </list>
           </t>
         </section>
