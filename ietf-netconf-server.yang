@@ -396,11 +396,11 @@ module ietf-netconf-server {
          or call-home use-cases";
       //if-feature "(ssh-listen or ssh-call-home)";
       container host-keys {
+        config false;
         description
           "Parent container for a list of host keys";
         list host-key {
           key name;
-          config false;
           description
             "A read-only list of host-keys supported by server";
           leaf name {
@@ -449,11 +449,11 @@ module ietf-netconf-server {
          or call-home use-cases";
       //if-feature "(tls-listen or tls-call-home)";
       container certificates {
+        config false;
         description
           "Parent container for a list of certificates";
         list certificate {
           key name;
-          config false;
           description
             "A list of certificates";
           leaf name {

@@ -408,31 +408,37 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
             NETCONF access control model (NACM) <xref target="RFC6536"/>.</t>
 
             <t>There are a number of data nodes defined in the 
-            "ietf-netconf-server" and "ietf-system-tls-auth" YANG 
-            modules which are writable/creatable/deletable (i.e., 
-            config true, which is the default).  These data nodes
-            may be considered sensitive or vulnerable in some 
+            "ietf-netconf-server" YANG module which are readable and/or 
+            writable that may be considered sensitive or vulnerable in some 
             network environments.  Write and read operations to
             these data nodes can have a negative effect on network
             operations.  It is thus important to control write
             and read access to these data nodes.  Below are the 
             data nodes and their sensitivity/vulnerability.</t>
 
-            <t>ietf-netconf-server:
+            <t>netconf-server/tls/client-auth/trusted-ca-certs:
             <list style="symbols">
-                <t>None.</t>
+              <t>This container contains certificates that the system
+              is to use as trust anchors for authenticating TLS-specific
+              client certificates.  Write access to this node should be
+              protected.</t>
             </list>
             </t>
 
-            <t>ietf-system-tls-auth:
+            <t>netconf-server/tls/client-auth/trusted-client-certs:
             <list style="symbols">
-                <t>/system/authentication/tls/psk-maps/psk-map/user-name:
-                This leaf node contains a user name that some deployments
-                may consider sensitive information.</t>
-                <t>/system/authentication/tls/psk-maps/psk-map/key: This 
-                leaf node contains a shared key that remote clients use
-                to authenticate themselves to the system.  This value
-                should not be readable or writable by anyone by default.</t>
+              <t>This container contains certificates that the system
+              is to trust directly when authenticating TLS-specific
+              client certificates.  Write access to this node should be
+              protected.</t>
+            </list>
+            </t>
+
+            <t>netconf-server/tls/client-auth/cert-map:
+            <list style="symbols">
+              <t>This container contains a user name that some deployments
+              may consider sensitive information.  Read access to this 
+              node may need to  be guarded.</t>
             </list>
             </t>
         </section>
@@ -668,7 +674,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
                  client-certificates to usernames</t>
               <t>clarified indirect client certificate authentication</t>
               <t>added keep-alive configuration for listen connections</t>
-              <t>added global NETCONF session optional parameters</t>
+              <t>added global-level NETCONF session parameters</t>
             </list>
           </t>
         </section>
