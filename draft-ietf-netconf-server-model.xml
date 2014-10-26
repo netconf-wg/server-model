@@ -229,7 +229,21 @@
 
         <section title="Data Model">
           <section title="Overview">
-            <section title="The listen Subtree">
+            <section title="The &quot;session-options&quot; subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+  INSERT_TEXT_FROM_FILE(refs/session-options-tree.txt)
+  ]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how this YANG module
+              enables configuration of NETCONF session options,
+              independent of any transport or connection strategy.
+              Please see the YANG module (<xref target="yang-module"/>)
+              for a complete description of these configuration knobs.</t>
+            </section>
+            <section title="The &quot;listen&quot; subtree">
               <t>
                 <figure>
                   <artwork><![CDATA[
@@ -249,9 +263,8 @@
               (i.e. SSH, TLS), and the IP address and port to listen on.
               The port field is optional, defaulting to the transport-specific
               port when not configured.</t>
-
             </section>
-            <section title="The call-home Subtree">
+            <section title="The &quot;call-home&quot; subtree">
               <t>
                 <figure>
                   <artwork><![CDATA[
@@ -274,7 +287,7 @@
               parameters, as well as the reconnection strategy to use.</t>
 
             </section>
-            <section title="The ssh Subtree">
+            <section title="The &quot;ssh&quot; subtree">
               <t>
                 <figure>
                   <artwork><![CDATA[
@@ -289,7 +302,7 @@
             </section>
 
 
-            <section title="The tls Subtree">
+            <section title="The &quot;tls&quot; subtree">
               <t>
                 <figure>
                   <artwork><![CDATA[
@@ -309,7 +322,7 @@
           </section>
 
 
-          <section title="YANG Module">
+          <section title="YANG Module" anchor="yang-module">
             <t>This YANG module imports YANG types from <xref
             target="RFC6991"/>, <xref target="RFC6536"/>, and
             <xref target="draft-ietf-netmod-snmp-cfg"/>.</t>
@@ -655,6 +668,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
                  client-certificates to usernames</t>
               <t>clarified indirect client certificate authentication</t>
               <t>added keep-alive configuration for listen connections</t>
+              <t>added global NETCONF session optional parameters</t>
             </list>
           </t>
         </section>

@@ -91,13 +91,63 @@ module ietf-netconf-server {
     description
       "Top-level container for NETCONF server configuration.";
 
+    uses session-options-container;
     uses listen-container;
     uses call-home-container;
     uses ssh-container;
     uses tls-container;
+
   }
 
 
+  grouping session-options-container {
+    description
+      "";
+    container session-options {
+      description
+        "NETCONF session options, independent of transport
+         or connection strategy.";
+      leaf hello-timeout {
+        type uint32 {
+          range "0 | 10 .. 3600";
+        }
+        units "seconds";
+        default '600';
+        description
+          "Specifies the number of seconds that a session
+           may exist before the hello PDU is received.
+           A session will be dropped if no hello PDU 
+           is received before this number of seconds elapses.
+      
+           If this parameter is set to zero, then the server
+           will wait forever for a hello message, and not
+           drop any sessions stuck in 'hello-wait' state.
+      
+           Setting this parameter to zero may permit
+           denial of service attacks, since only a limited
+           number of concurrent sessions are supported
+           by the server.";
+      }
+      leaf idle-timeout {
+        type uint32 {
+          range "0 | 10 .. 360000";
+        }
+        units "seconds";
+        default '3600';
+        description
+          "Specifies the number of seconds that a session
+           may remain idle without issuing any RPC requests.
+           A session will be dropped if it is idle for an
+           interval longer than this number of seconds.
+      
+           Sessions that have a notification subscription
+           active are never dropped. 
+      
+           If this parameter is set to zero, then the server
+           will never drop a session because it is idle.";
+      }
+    }
+  }
 
   grouping listen-container {
     description
@@ -106,6 +156,16 @@ module ietf-netconf-server {
       description
         "Configures listen behavior";
       //if-feature "(ssh-listen or tls-listen)";
+      leaf max-sessions {
+        type uint16 {
+          range "0 .. 1024";
+        }
+        default '0';
+        description
+          "Specifies the maximum number of concurrent sessions
+             that can be active at one time.  The value 0 indicates
+             that no artificial session limit should be used.";
+      }
       list endpoint {
         key name;
         description
@@ -524,7 +584,6 @@ module ietf-netconf-server {
       "a common grouping";
     leaf address {
       type inet:ip-address;
-      mandatory true;
       description
        "The IP address of the interface to listen on.";
     }

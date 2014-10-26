@@ -1,18 +1,19 @@
 module: ietf-netconf-server
    +--rw netconf-server
       +--rw listen {"(ssh-listen or tls-listen)"}?  // YANG 1.1 syntax
+         +--rw max-sessions?   uint16
          +--rw endpoint* [name]
             +--rw name           string
             +--rw (transport)
             |  +--:(ssh) {ssh-listen}?
             |  |  +--rw ssh
-            |  |     +--rw address      inet:ip-address
+            |  |     +--rw address?     inet:ip-address
             |  |     +--rw port?        inet:port-number
             |  |     +--rw host-keys
             |  |        +--rw host-key*   string
             |  +--:(tls) {tls-listen}?
             |     +--rw tls
-            |        +--rw address         inet:ip-address
+            |        +--rw address?        inet:ip-address
             |        +--rw port?           inet:port-number
             |        +--rw certificates
             |           +--rw certificate*   string
