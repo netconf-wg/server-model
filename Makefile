@@ -30,7 +30,7 @@ next := $(draft)-$(next_ver)
 
 latest: $(draft).txt $(draft).html
 
-submit: $(next).txt
+submit: $(next).txt $(next).html
 
 idnits: $(next).txt
 	$(idnits) $<
@@ -48,6 +48,8 @@ endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" $< > $@
+	./.insert-figures.sh $@ > tmp
+	mv tmp $@
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
@@ -57,9 +59,9 @@ $(next).xml: $(draft).xml
 	$(oxtradoc) -m outline-to-xml -n "$@" $< > $@
 
 %.txt: %.xml
-	./.insert-figures.sh $< > $<2
-	$(xml2rfc) $<2 -o $@ --text
-	rm $<2
+	#./.insert-figures.sh $< > $<2
+	$(xml2rfc) $< -o $@ --text
+	#rm $<2
 
 ifeq "$(shell uname -s 2>/dev/null)" "Darwin"
 sed_i := sed -i ''
@@ -68,9 +70,9 @@ sed_i := sed -i
 endif
 
 %.html: %.xml
-	./.insert-figures.sh $< > $<2
-	$(xml2rfc) $<2 -o $@ --html
-	rm $<2
+	#./.insert-figures.sh $< > $<2
+	$(xml2rfc) $< -o $@ --html
+	#rm $<2
 	$(sed_i) -f .addstyle.sed $@
 
 

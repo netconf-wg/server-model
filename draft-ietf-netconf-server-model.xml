@@ -233,8 +233,8 @@
               <t>
                 <figure>
                   <artwork><![CDATA[
-  INSERT_TEXT_FROM_FILE(refs/session-options-tree.txt)
-  ]]></artwork>
+INSERT_TEXT_FROM_FILE(refs/session-options-tree.txt)
+]]></artwork>
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
@@ -247,8 +247,8 @@
               <t>
                 <figure>
                   <artwork><![CDATA[
-  INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
-  ]]></artwork>
+INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
+]]></artwork>
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
@@ -268,8 +268,8 @@
               <t>
                 <figure>
                   <artwork><![CDATA[
-  INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
-  ]]></artwork>
+INSERT_TEXT_FROM_FILE(refs/call-home-tree.txt)
+]]></artwork>
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
@@ -291,8 +291,8 @@
               <t>
                 <figure>
                   <artwork><![CDATA[
-  INSERT_TEXT_FROM_FILE(refs/ssh-tree.txt)
-  ]]></artwork>
+INSERT_TEXT_FROM_FILE(refs/ssh-tree.txt)
+]]></artwork>
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
@@ -306,8 +306,8 @@
               <t>
                 <figure>
                   <artwork><![CDATA[
-  INSERT_TEXT_FROM_FILE(refs/tls-tree.txt)
-  ]]></artwork>
+INSERT_TEXT_FROM_FILE(refs/tls-tree.txt)
+]]></artwork>
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
@@ -324,21 +324,20 @@
 
           <section title="YANG Module" anchor="yang-module">
             <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/>, <xref target="RFC6536"/>, and
+            target="RFC6991"/>, and
             <xref target="draft-ietf-netmod-snmp-cfg"/>.</t>
             <t>
             <figure>
               <!--<preamble>The YANG Module</preamble>-->
               <artwork><![CDATA[
-   RFC Ed.: update the date below with the date of RFC publication 
-   and remove this note.
+RFC Ed.: update the date below with the date of RFC publication 
+and remove this note.
 
-   <CODE BEGINS> file "ietf-netconf-server@YYYY-MM-DD.yang"
+<CODE BEGINS> file "ietf-netconf-server@YYYY-MM-DD.yang"
 
 INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
 
-   <CODE ENDS>
-
+<CODE ENDS>
 ]]></artwork>
             </figure>
             </t>
@@ -546,9 +545,9 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server.yang)
               fullname='Jürgen Schönwälder'>
              <organization>Jacobs University</organization>
            </author>
-           <date month='November' day='5' year='2013' />
+           <date month='September' day='18' year='2014' />
          </front>
-         <seriesInfo name='Internet-Draft' value='draft-ietf-netmod-snmp-cfg-03' />
+         <seriesInfo name='Internet-Draft' value='draft-ietf-netmod-snmp-cfg-08' />
        </reference>
        <reference anchor='draft-ietf-netconf-call-home'>
          <front>
