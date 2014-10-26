@@ -654,6 +654,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-tls.xml)
                  authenticating client-certificates, and mapping authenticated
                  client-certificates to usernames</t>
               <t>clarified indirect client certificate authentication</t>
+              <t>added keep-alive configuration for listen connections</t>
             </list>
           </t>
         </section>
