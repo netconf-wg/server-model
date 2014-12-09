@@ -240,6 +240,8 @@ INSERT_TEXT_FROM_FILE(refs/session-options-tree.txt)
               <t>The above subtree illustrates how this YANG module
               enables configuration of NETCONF session options,
               independent of any transport or connection strategy.
+              A feature statement is used for the server to advertise
+              support for configuring these NETCONF server options.
               Please see the YANG module (<xref target="yang-module"/>)
               for a complete description of these configuration knobs.</t>
             </section>

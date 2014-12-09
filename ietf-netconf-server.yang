@@ -60,6 +60,12 @@ module ietf-netconf-server {
 
   // Features
 
+  feature session-options {
+    description
+     "The session-options feature indicates that the NETCONF server
+      supports the session-options container.";
+  }
+
   feature ssh {
     description
      "The ssh feature indicates that the server supports the 
@@ -118,6 +124,7 @@ module ietf-netconf-server {
       description
         "NETCONF session options, independent of transport
          or connection strategy.";
+      if-feature session-options;
       leaf hello-timeout {
         type uint32 {
           range "0 | 10 .. 3600";
