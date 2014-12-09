@@ -1,6 +1,6 @@
 module: ietf-netconf-server
    +--rw netconf-server
-      +--rw ssh
+      +--rw ssh {ssh}?
          +--ro host-keys
             +--ro host-key* [name]
                +--ro name                 string

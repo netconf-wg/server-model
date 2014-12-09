@@ -3,11 +3,13 @@ module ietf-netconf-server {
   namespace "urn:ietf:params:xml:ns:yang:ietf-netconf-server";
   prefix "ncserver";
 
-  import ietf-inet-types {
-    prefix inet;                // RFC 6991
+  import ietf-inet-types {           // RFC 6991
+    prefix inet;
+    revision-date 2013-07-15;
   }
-  import ietf-x509-cert-to-name {
-    prefix x509c2n;             // draft-ietf-netmod-snmp-cfg
+  import ietf-x509-cert-to-name {    // draft-ietf-netmod-snmp-cfg
+    prefix x509c2n;
+    revision-date 2014-05-06;
   }
  
   organization
@@ -58,31 +60,40 @@ module ietf-netconf-server {
 
   // Features
 
-  feature ssh-listen {
+  feature ssh {
     description
-     "The ssh-listen feature indicates that the NETCONF server can
-      open a port to listen for incoming client connections.";
-  }
-
-  feature ssh-call-home {
-    description
-     "The ssh-call-home feature indicates that the NETCONF server can
-      connect to a client.";
+     "The ssh feature indicates that the server supports the 
+      SSH transport protocol.";
     reference
-     "RFC XXXX: Reverse Secure Shell (Reverse SSH)";
+     "RFC 6242: Using the NETCONF Protocol over Secure Shell (SSH)";
   }
 
-  feature tls-listen {
+  feature tls {
     description
-     "The tls-listen feature indicates that the NETCONF server can
-      open a port to listen for incoming client connections.";
+     "The tls feature indicates that the server supports the
+      TLS transport protocol.";
+    reference
+     "RFC 5539: NETCONF over Transport Layer Security (TLS)";
   }
 
-  feature tls-call-home {
+  feature listen {
     description
-     "The tls-call-home feature indicates that the NETCONF server can
-      connect to a client.";
+     "The listen feature indicates that the server supports
+      opening a port to listen for incoming client connections.";
+    reference
+     "RFC 6242: Using the NETCONF Protocol over Secure Shell (SSH)
+      RFC 5539: NETCONF over Transport Layer Security (TLS)";
   }
+
+  feature call-home {
+    description
+     "The call-home feature indicates that the server supports 
+      connecting to the client";
+    reference
+     "RFC XXXX: NETCONF Call Home and RESTCONF Call Home";
+  }
+
+
 
 
 
@@ -155,7 +166,7 @@ module ietf-netconf-server {
     container listen {
       description
         "Configures listen behavior";
-      //if-feature "(ssh-listen or tls-listen)";
+      if-feature listen;
       leaf max-sessions {
         type uint16 {
           range "0 .. 1024";
@@ -180,7 +191,7 @@ module ietf-netconf-server {
           description
             "Selects between SSH and TLS transports.";
           case ssh {
-            if-feature ssh-listen;
+            if-feature ssh;
             container ssh {
               description
                 "SSH-specific listening configuration for inbound
@@ -194,7 +205,7 @@ module ietf-netconf-server {
             }
           }
           case tls {
-            if-feature tls-listen;
+            if-feature tls;
             container tls {
               description
                 "TLS-specific listening configuration for inbound
@@ -221,7 +232,7 @@ module ietf-netconf-server {
     description
       "";
     container call-home {
-      //if-feature "(ssh-call-home or tls-call-home)";
+      if-feature call-home;
       description
         "Configures call-home behavior";
       list application {
@@ -238,7 +249,7 @@ module ietf-netconf-server {
           description
             "Selects between SSH and TLS transports.";
           case ssh {
-            if-feature ssh-call-home;
+            if-feature ssh;
             container ssh {
               description
                 "Specifies SSH-specific call-home transport
@@ -252,7 +263,7 @@ module ietf-netconf-server {
             }
           }
           case tls {
-            if-feature tls-call-home;
+            if-feature tls;
             container tls {
               description
                 "Specifies TLS-specific call-home transport
@@ -394,7 +405,7 @@ module ietf-netconf-server {
       description
         "Configures SSH properties not specific to the listen 
          or call-home use-cases";
-      //if-feature "(ssh-listen or ssh-call-home)";
+      if-feature ssh;
       container host-keys {
         config false;
         description
@@ -447,7 +458,7 @@ module ietf-netconf-server {
       description
         "Configures TLS properties not specific to the listen 
          or call-home use-cases";
-      //if-feature "(tls-listen or tls-call-home)";
+      if-feature tls;
       container certificates {
         config false;
         description

@@ -1,6 +1,6 @@
 module: ietf-netconf-server
    +--rw netconf-server
-      +--rw tls
+      +--rw tls {tls}?
          +--ro certificates
          |  +--ro certificate* [name]
          |     +--ro name    string
