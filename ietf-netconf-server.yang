@@ -22,8 +22,8 @@ module ietf-netconf-server {
     WG Chair: Mehmet Ersue
               <mailto:mehmet.ersue@nsn.com>
 
-    WG Chair: Bert Wijnen
-              <mailto:bertietf@bwijnen.net>
+    WG Chair: Mahesh Jethanandani
+              <mailto:mjethanandani@gmail.com>
 
     Editor:   Kent Watsen
               <mailto:kwatsen@juniper.net>";
@@ -419,47 +419,6 @@ module ietf-netconf-server {
         "Configures SSH properties not specific to the listen 
          or call-home use-cases";
       if-feature ssh;
-      container host-keys {
-        config false;
-        description
-          "Parent container for a list of host keys";
-        list host-key {
-          key name;
-          description
-            "A read-only list of host-keys supported by server";
-          leaf name {
-            type string;
-            description
-              "Common name for the host-key";
-          }
-          leaf format-identifier {
-            type string;
-            mandatory true;
-            description
-              "ssh-dss, ssh-rsa, x509v3-rsa2048-sha256, etc.";
-            reference
-              "RFC 4253: SSH Transport Layer Protocol, section 6.6
-               RFC 6187: X.509v3 Certificates for SSH, section 3";
-          }
-          leaf data {
-            type binary;
-            mandatory true;
-            description
-              "Key-specific binary encoding.";
-            reference
-              "RFC 4253: SSH Transport Layer Protocol, section 6.6";
-          }
-          leaf fingerprint {
-            type string;
-            mandatory true;
-            description
-              "c1:b1:30:29:d7:b8:de:6c:97:77:10:d7:46:41:63:87";
-            reference
-              "RFC 4716: The Secure Shell (SSH) Public Key File 
-                         Format, section 4";
-          }
-        }     
-      }
       container x509 {
         if-feature rfc6187;
         uses trusted-certs-grouping;
@@ -476,29 +435,6 @@ module ietf-netconf-server {
         "Configures TLS properties not specific to the listen 
          or call-home use-cases";
       if-feature tls;
-      container certificates {
-        config false;
-        description
-          "Parent container for a list of certificates";
-        list certificate {
-          key name;
-          description
-            "A list of certificates";
-          leaf name {
-            type string;
-            description
-              "the certificate's common name";
-          }
-          leaf data {
-            type binary;
-            mandatory true;
-            description
-              "The binary certificate structure, as specified 
-               by RFC 5246, Section 7.4.2, i.e.,: opaque 
-               ASN.1Cert<1..2^24-1>;";
-          }
-        }
-      }
       container client-auth {
         description
           "Container for TLS client authentication configuration.";
@@ -515,7 +451,6 @@ module ietf-netconf-server {
             and MUST NOT accept NETCONF messages over it.";
         }
       }
-
     }
   }
 

@@ -35,20 +35,6 @@
     </application>
   </call-home>
   <tls>
-    <certificates>
-      <certificate>
-        <name>fw1.east.example.com</name>
-        <data>  <!-- base64 reformated for draft -->
-          AAAAB3NzaC1yc2EAAAABIwAAAQEA7D2lxYg3+WD97RZqZtO8bUU8QpIl6g9
-          X11kZHZ8NgSIR+x2H1MHCD5sEjmx/B6JIouK5eBvbJE9FFV3phsl62fupN6
-          Y4EmXosC6iqpuI41dcGA63XCQ1OenWG4ppdq1f8tlecSrmEcLw7MKPzBHK6
-          rNQTciqMuVuLPOKwBu/54QAiUwvvHKAsk8bkN9YxEJ1NTV1FFQmvMOADVcD
-          2qqPangETwV5zInW8AEkBbLccM/mmHucGNS81axXR3V9R5KgXF2DyGB47d2
-          k6iOnGa3LBIOYi/5Q+O8IFUlO+kytfqwuFgUc+Mx7aKReSIAPov3owVjeBL
-          KWsvjD24UO68qtwQ==
-        </data>
-      </certificate>
-    </certificates>
     <client-auth>
       <trusted-ca-certs>
         <trusted-ca-cert>
