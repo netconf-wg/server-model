@@ -1,4 +1,8 @@
 <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+  <session-options>
+    <hello-timeout>600</hello-timeout>
+    <idle-timeout>3600</idle-timeout>
+  </session-options>
   <listen>
     <endpoint>
       <name>foo bar</name>
@@ -85,5 +89,20 @@
         </fingerprint>
       </host-key>
     </host-keys>
+    <x509>
+      <trusted-ca-certs>
+        <trusted-ca-cert>
+          QW4gRWFzdGVyIGVnZywgZm9yIHRob3NlIHdobyBtaWdodCBsb29rICA6KQo=
+        </trusted-ca-cert>
+      </trusted-ca-certs>
+      <trusted-client-certs>
+        <trusted-client-cert>
+          SSBhbSB0aGUgZWdnIG1hbiwgdGhleSBhcmUgdGhlIGVnZyBtZW4uCg==
+        </trusted-client-cert>
+        <trusted-client-cert>
+          SSBhbSB0aGUgd2FscnVzLCBnb28gZ29vIGcnam9vYi4K
+        </trusted-client-cert>
+      </trusted-client-certs>
+    </x509>
   </ssh>
 </netconf-server>

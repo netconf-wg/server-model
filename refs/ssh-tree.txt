@@ -2,8 +2,13 @@ module: ietf-netconf-server
    +--rw netconf-server
       +--rw ssh {ssh}?
          +--ro host-keys
-            +--ro host-key* [name]
-               +--ro name                 string
-               +--ro format-identifier    string
-               +--ro data                 binary
-               +--ro fingerprint          string
+         |  +--ro host-key* [name]
+         |     +--ro name                 string
+         |     +--ro format-identifier    string
+         |     +--ro data                 binary
+         |     +--ro fingerprint          string
+         +--rw x509 {rfc6187}?
+            +--rw trusted-ca-certs
+            |  +--rw trusted-ca-cert*   binary
+            +--rw trusted-client-certs
+               +--rw trusted-client-cert*   binary

@@ -46,8 +46,7 @@
                 <email>j.schoenwaelder@jacobs-university.de</email>
             </address>
         </author>
- 
-        <date day="26" month="October" year="2014"/>
+        <date/>
         <area>Operations</area>
         <workgroup>NETCONF Working Group</workgroup>
         <keyword>netconf-server</keyword>
@@ -298,11 +297,12 @@ INSERT_TEXT_FROM_FILE(refs/ssh-tree.txt)
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
-              provides SSH state independent of if the NETCONF server if 
-              listening or calling home.  This data-model provides a 
-              read-only listing of currently configured TLC certificates.</t>
+              provides access to SSH state and enables SSH configuration independent
+              of if the NETCONF server is listening or calling home.
+              This data-model provides 1) a read-only listing of currently
+              configured SSH host-keys and 2) for when RFC 6187 is supported, an 
+              ability to configure how client-certificates are authenticated.</t>
             </section>
-
 
             <section title="The &quot;tls&quot; subtree">
               <t>
@@ -313,13 +313,12 @@ INSERT_TEXT_FROM_FILE(refs/tls-tree.txt)
                 </figure>
               </t>
               <t>The above subtree illustrates how this YANG module
-              provides TLS state and enables TLS configuration independent
-              of if the NETCONF server if listening or calling home.
+              provides access to TLS state and enables TLS configuration independent
+              of if the NETCONF server is listening or calling home.
               This data-model provides 1) a read-only listing of currently
-              configured TLC certificates and 2) an ability to configure
-              how client-certificates are authenicated and how authenticated
+              configured TLS certificates and 2) an ability to configure
+              how client-certificates are authenticated and how authenticated
               client-certificates are mapped to NETCONF user names.</t>
-
             </section>
           </section>
 

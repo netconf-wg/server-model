@@ -1,4 +1,8 @@
 <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+  <session-options>
+    <hello-timeout>600</hello-timeout>
+    <idle-timeout>3600</idle-timeout>
+  </session-options>
   <listen>
     <endpoint>
       <name>primary-netconf-endpoint</name>
