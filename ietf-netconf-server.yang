@@ -7,7 +7,7 @@ module ietf-netconf-server {
     prefix inet;
     revision-date 2013-07-15;
   }
-  import ietf-x509-cert-to-name {    // draft-ietf-netmod-snmp-cfg
+  import ietf-x509-cert-to-name {    // RFC ZZZZ
     prefix x509c2n;
     revision-date 2014-05-06;
   }
@@ -43,18 +43,14 @@ module ietf-netconf-server {
     Legal Provisions Relating to IETF Documents
     (http://trustee.ietf.org/license-info).
 
-    This version of this YANG module is part of RFC XXXX; see
+    This version of this YANG module is part of RFC VVVV; see
     the RFC itself for full legal notices.";
-  // RFC Ed.: replace XXXX with actual RFC number and
-  // remove this note
 
-  // RFC Ed.: please update the date to the date of publication
-
-  revision "2014-10-26" {  // YYYY-MM-DD
+  revision "YYYY-MM-DD" {
     description
      "Initial version";
     reference
-     "RFC XXXX: NETCONF Server Configuration Model";
+     "RFC VVVV: NETCONF Server and RESTCONF Server Configuration Models";
   }
 
 
@@ -96,7 +92,7 @@ module ietf-netconf-server {
      "The call-home feature indicates that the server supports 
       connecting to the client";
     reference
-     "RFC XXXX: NETCONF Call Home and RESTCONF Call Home";
+     "RFC YYYY: NETCONF Call Home and RESTCONF Call Home";
   }
 
   feature rfc6187 {
@@ -128,8 +124,8 @@ module ietf-netconf-server {
       "";
     container session-options {
       description
-        "NETCONF session options, independent of transport
-         or connection strategy.";
+        "NETCONF session options, independent of transport or
+         connection strategy.";
       if-feature session-options;
       leaf hello-timeout {
         type uint32 {
@@ -138,19 +134,18 @@ module ietf-netconf-server {
         units "seconds";
         default '600';
         description
-          "Specifies the number of seconds that a session
-           may exist before the hello PDU is received.
-           A session will be dropped if no hello PDU 
-           is received before this number of seconds elapses.
+          "Specifies the number of seconds that a session may exist
+           before the hello PDU is received.  A session will be 
+           dropped if no hello PDU is received before this number 
+           of seconds elapses.
       
-           If this parameter is set to zero, then the server
-           will wait forever for a hello message, and not
-           drop any sessions stuck in 'hello-wait' state.
+           If this parameter is set to zero, then the server will 
+           wait forever for a hello message, and not drop any 
+           sessions stuck in 'hello-wait' state.
       
-           Setting this parameter to zero may permit
-           denial of service attacks, since only a limited
-           number of concurrent sessions are supported
-           by the server.";
+           Setting this parameter to zero may permit denial of 
+           service attacks, since only a limited number of 
+           concurrent sessions may be supported by the server.";
       }
       leaf idle-timeout {
         type uint32 {
@@ -159,16 +154,17 @@ module ietf-netconf-server {
         units "seconds";
         default '3600';
         description
-          "Specifies the number of seconds that a session
-           may remain idle without issuing any RPC requests.
-           A session will be dropped if it is idle for an
-           interval longer than this number of seconds.
-      
-           Sessions that have a notification subscription
+          "Specifies the number of seconds that a NETCONF session may
+           remain idle without issuing any RPC requests.  A session 
+           will be dropped if it is idle for an interval longer than 
+           this number of seconds.  If this parameter is set to zero,
+           then the server will never drop a session because it is 
+           idle.  Sessions that have a notification subscription 
            active are never dropped. 
-      
-           If this parameter is set to zero, then the server
-           will never drop a session because it is idle.";
+           
+           This mechanism is independent of keep-alives, as it regards
+           activity occurring at the NETCONF protocol layer, whereas
+           the keep-alive mechanism regards transport-level activity.";
       }
     }
   }
@@ -251,16 +247,17 @@ module ietf-netconf-server {
       list application {
         key name;
         description
-          "List of applications to call-home to.";
+          "List of NETCONF clients the NETCONF server is to initiate
+           call-home connections to.";
         leaf name {
           type string;
           description
-            "An arbitrary name for the remote application.";
+            "An arbitrary name for the remote NETCONF client.";
         }
         choice transport {
           mandatory true;
           description
-            "Selects between SSH and TLS transports.";
+            "Selects between available transports.";
           case ssh {
             if-feature ssh;
             container ssh {
@@ -269,7 +266,7 @@ module ietf-netconf-server {
                  configuration.";
               uses endpoints-container {
                 refine endpoints/endpoint/port {
-                  default 8888;  // pending IANA assignment
+                  default 7777;
                 }
               }
               uses host-keys-container;
@@ -283,7 +280,7 @@ module ietf-netconf-server {
                  configuration.";
               uses endpoints-container {
                 refine endpoints/endpoint/port {
-                  default 9999;  // pending IANA assignment
+                  default 8888;
                 }
               }
               uses certificates-container;
@@ -292,8 +289,7 @@ module ietf-netconf-server {
         }
         container connection-type {
           description
-           "Indicates the NETCONF client's preference for how the
-            device's connection is maintained.";
+           "Indicates the kind of connection to be maintained.";
           choice connection-type {
             default persistent-connection;
             description
@@ -301,15 +297,14 @@ module ietf-netconf-server {
             case persistent-connection {
               container persistent {
                 description
-                 "Maintain a persistent connection to the
-                  NETCONF client. If the connection goes down,
-                  immediately start trying to reconnect to it,
-                  using the reconnection strategy.
+                 "Maintain a persistent connection to the NETCONF 
+                  client. If the connection goes down, immediately 
+                  start trying to reconnect to it, using the 
+                  reconnection strategy.
     
-                  This connection type minimizes any NETCONF 
-                  client to NETCONF server data-transfer delay,
-                  albeit at the expense of holding resources
-                  longer.";
+                  This connection type minimizes any NETCONF client
+                  to NETCONF server data-transfer delay, albeit at 
+                  the expense of holding resources longer.";
                 uses keep-alives-container  {
                   refine keep-alives/interval-secs {
                     default 15; // 15 seconds for call-home sessions
@@ -323,7 +318,7 @@ module ietf-netconf-server {
                  "Periodically connect to NETCONF client, using the
                   reconnection strategy, so the NETCONF client can 
                   deliver pending messages to the NETCONF server.
-    
+
                   For messages the NETCONF server wants to send to
                   to the NETCONF client, the NETCONF server should
                   proactively connect to the NETCONF client, if
@@ -333,23 +328,22 @@ module ietf-netconf-server {
                   units minutes;
                   default 5;
                   description
-                   "The maximum amount of unconnected time the
-                    device will wait until establishing a
-                    connection to the NETCONF client again. The
-                    device MAY establish a connection before this
-                    time if it has data it needs to send to the
-                    NETCONF client. Note: this value differs from
-                    the reconnection strategy's interval-secs
-                    value.";
+                   "The maximum amount of unconnected time the NETCONF
+                    server will wait until establishing a connection to
+                    the NETCONF client again. The NETCONF server MAY
+                    establish a connection before this time if it has
+                    data it needs to send to the NETCONF client. Note:
+                    this value differs from the reconnection strategy's
+                    interval-secs value.";
                 }
                 leaf linger-secs {
                   type uint8;
                   units seconds;
                   default 30;
                   description
-                   "The amount of time the device should wait after
-                    last receiving data from or sending data to the
-                    NETCONF client's endpoint before closing its 
+                   "The amount of time the NETCONF server should wait
+                    after last receiving data from or sending data to
+                    the NETCONF client's endpoint before closing its 
                     connection to it.  This is an optimization to 
                     prevent unnecessary connections.";
                 }
@@ -359,13 +353,13 @@ module ietf-netconf-server {
         }
         container reconnect-strategy {
           description
-           "The reconnection strategy guides how a device reconnects
-            to an application, after losing a connection to it, 
-            even if due to a reboot.  The device starts with the 
-            specified endpoint, tries to connect to it count-max 
-            times, waiting interval-secs between each connection
-            attempt, before trying the next endpoint in the list 
-            (round robin).";
+           "The reconnection strategy guides how a NETCONF server 
+            reconnects to an NETCONF client, after losing a connection
+            to it, even if due to a reboot.  The NETCONF server starts 
+            with the specified endpoint and tries to connect to it 
+            count-max times, waiting interval-secs between each 
+            connection attempt, before trying the next endpoint in 
+            the list (round robin).";
           leaf start-with {
             type enumeration {
               enum first-listed {
@@ -382,9 +376,9 @@ module ietf-netconf-server {
             }
             default first-listed;
             description
-             "Specifies which of the application's endpoints the
-              device should start with when trying to connect to
-              the application.  If no previous connection has
+             "Specifies which of the NETCONF client's endpoints the
+              NETCONF server should start with when trying to connect
+              to the NETCONF client.  If no previous connection has
               ever been established, last-connected defaults to
               the first endpoint listed.";
           }
@@ -401,9 +395,9 @@ module ietf-netconf-server {
             type uint8;
             default 3;
             description
-             "Specifies the number times the device tries to
-              connect to a specific endpoint before moving on to
-              the next endpoint in the list (round robin).";
+             "Specifies the number times the NETCONF server tries to
+              connect to a specific endpoint before moving on to the
+              next endpoint in the list (round robin).";
           }
         }
       }
@@ -443,12 +437,11 @@ module ietf-netconf-server {
           uses x509c2n:cert-to-name;
           description
            "The cert-maps container is used by a NETCONF server to
-            map the NETCONF client's presented X.509 certificate to
-            a NETCONF username.
-    
-            If no matching and valid cert-to-name list entry can be
-            found, then the NETCONF server MUST close the connection,
-            and MUST NOT accept NETCONF messages over it.";
+            map the NETCONF client's presented X.509 certificate to a
+            NETCONF username.  If no matching and valid cert-to-name
+            list entry can be found, then the NETCONF server MUST 
+            close the connection, and MUST NOT accept NETCONF 
+            messages over it.";
         }
       }
     }
@@ -514,12 +507,15 @@ module ietf-netconf-server {
         min-elements 1;
         ordered-by user;
         description
-          "User-ordered list of host-keys the SSH server 
-           considers when composing the list of  server
-           host key algorithms it will send to the client.
-           The value of the string is the name of a 
-           host-key configured on the system, as returned
-           by /netconf-server/ssh/host-keys/host-key/name.";
+          "A user-ordered list of host-keys the SSH server 
+           considers when composing the list of server host
+           key algorithms it will send to the client in its
+           SSH_MSG_KEXINIT message.  The value of the string
+           is the unique identifier for a host-key configured
+           on the system.  How valid values are discovered is 
+           outside the scope of this module, but they are 
+           envisioned to be the keys for a list of host-keys
+           provided by another YANG module";
         reference
           "RFC 4253: The SSH Transport Layer Protocol, Section 7";
       }
@@ -536,11 +532,13 @@ module ietf-netconf-server {
         type string;
         min-elements 1;
         description
-          "Unordered list of certificates the TLS server can
-           pick from when sending its Server Certificate
-           message.  The value of the string is the name of a
-           certificate configured on the system, as returned by
-           /netconf-server/tls/certificates/certificate/name";
+          "An unordered list of certificates the TLS server can pick 
+           from when sending its Server Certificate message.  The value
+           of the string is the unique identifier for a certificate 
+           configured on the system.  How valid values are discovered
+           is outside the scope of this module, but they are envisioned
+           to be the keys for a list of certificates provided 
+           by another YANG module";
         reference
           "RFC 5246: The TLS Protocol, Section 7.4.2";
       }
@@ -558,8 +556,8 @@ module ietf-netconf-server {
     leaf port {
       type inet:port-number;
       description
-       "The local port number on this interface the
-        NETCONF server listens on.";
+       "The local port number on this interface the NETCONF server 
+        listens on.";
     }
   }
 
@@ -576,7 +574,7 @@ module ietf-netconf-server {
         min-elements 1;
         ordered-by user;
         description
-          "User-ordered list of endpoints for this application.
+          "User-ordered list of endpoints for this NETCONF client.
            Defining more than one enables high-availability.";
         leaf name {
           type string;
@@ -587,18 +585,17 @@ module ietf-netconf-server {
           type inet:host;
           mandatory true;
           description
-           "The hostname or IP address or hostname of the 
-            endpoint.  If a hostname is provided and DNS 
-            resolves to more than one IP address, the device
-            SHOULD try all of the ones it can based on how 
-            its networking stack is configured (e.g. v4, v6, 
-            dual-stack).";
+           "The hostname or IP address or hostname of the endpoint.
+            If a hostname is provided and DNS resolves to more than
+            one IP address, the NETCONF server SHOULD try all of 
+            the ones it can based on how its networking stack is 
+            configured (e.g. v4, v6, dual-stack).";
         }
         leaf port {
           type inet:port-number;
           description
-           "The IP port for this endpoint. The device will use
-            the IANA-assigned well-known port if not specified.";
+           "The IP port for this endpoint. The NETCONF server will
+            use the IANA-assigned well-known port if not specified.";
         }
       }
     }
@@ -609,39 +606,34 @@ module ietf-netconf-server {
       "";
     container keep-alives {
       description
-        "Configures the keep-alive policy, to proactively
-         test the aliveness of the NETCONF client, in 
-         order to know when a new call home connection 
-         should be established.  Keepalive implementation
-         is described in RFC XXXX, section 4.";
+        "Configures the keep-alive policy, to proactively test the 
+         aliveness of the NETCONF client, in order to know when a
+         new call home connection should be established.";
       reference
-        "RFC XXXX: NETCONF Server Configuration Model 
-         Section 4";
+        "RFC VVVV: NETCONF Server and RESTCONF Server Configuration
+         Models, Section 4";
       leaf interval-secs {
         type uint8;
         units seconds;
         description
-         "Sets a timeout interval in seconds after which
-          if no data has been received from the NETCONF 
-          client, a message will be sent to request a 
-          response from the NETCONF client.  A value of
-          '0' indicates that no keep-alive messages 
-          should be sent.";
+         "Sets a timeout interval in seconds after which if no data
+          has been received from the NETCONF client, a message will
+          be sent to request a response from the NETCONF client.  A
+          value of '0' indicates that no keep-alive messages should
+          be sent.";
       }
       leaf count-max {
         type uint8;
         default 3;
         description
-         "Sets the number of keep-alive messages that 
-          may be sent without receiving any data from 
-          the NETCONF client before assuming the NETCONF 
-          client is no longer alive.  If this threshold 
-          is reached, the transport-level connection
-          will be disconnected, which will trigger the 
-          reconnection strategy).  The interval timer is
-          reset after each transmission, thus an 
-          unresponsive NETCONF client will be dropped
-          after ~count-max * interval-secs seconds.";
+         "Sets the number of keep-alive messages that may be sent 
+          without receiving any data from the NETCONF client before
+          assuming the NETCONF client is no longer alive.  If this
+          threshold is reached, the transport-level connection will
+          be disconnected, which will trigger the reconnection 
+          strategy).  The interval timer is reset after each 
+          transmission, thus an unresponsive NETCONF client will
+          be dropped after ~count-max * interval-secs seconds.";
       }
     }
   }

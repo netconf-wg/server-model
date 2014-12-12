@@ -1,0 +1,16 @@
+module: ietf-restconf-server
+   +--rw restconf-server
+      +--rw listen {listen}?
+         +--rw max-sessions?   uint16
+         +--rw endpoint* [name]
+            +--rw name           string
+            +--rw (transport)
+            |  +--:(tls)
+            |     +--rw tls
+            |        +--rw address?        inet:ip-address
+            |        +--rw port?           inet:port-number
+            |        +--rw certificates
+            |           +--rw certificate*   string
+            +--rw keep-alives
+               +--rw interval-secs?   uint8
+               +--rw count-max?       uint8

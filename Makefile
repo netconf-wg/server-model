@@ -30,7 +30,7 @@ next := $(draft)-$(next_ver)
 
 #latest: $(draft).txt $(draft).html
 
-.DEFAULT: $(next).txt $(next).html
+default: $(next).xml $(next).txt $(next).html
 
 idnits: $(next).txt
 	$(idnits) $<
@@ -39,6 +39,7 @@ clean:
 	-rm -f $(draft).txt $(draft).html index.html
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
+	-rm -r ietf-*conf-server\@*.yang
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
@@ -48,6 +49,8 @@ endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" $< > $@
+	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-netconf-server.yang > ietf-netconf-server\@$(shell date +%Y-%m-%d).yang
+	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-restconf-server.yang > ietf-restconf-server\@$(shell date +%Y-%m-%d).yang
 	cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp
 	mv tmp $@
