@@ -124,7 +124,7 @@ module ietf-restconf-server {
                  connections.";
               uses address-and-port-grouping {
                 refine port {
-                  default 6513;
+                  default 443;
                 }
               }
               uses certificates-container;
