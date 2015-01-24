@@ -292,8 +292,6 @@ INSERT_TEXT_FROM_FILE(refs/session-options-tree.txt)
               <t>The above subtree illustrates how the ietf-netconf-server YANG module
               enables configuration of NETCONF session options,
               independent of any transport or connection strategy.
-              A feature statement is used for the server to advertise
-              support for configuring these NETCONF server options.
               Please see the YANG module (<xref target="netconf-yang-module"/>)
               for a complete description of these configuration knobs.</t>
             </section>
@@ -824,6 +822,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
         <section title="05 to 06">
           <t>
             <list style="symbols">
+              <t>Removed feature statement on the session-options container (issue #21).</t>
               <t>Fixed default RESTCONF server port value to be 443 (issue #26).</t>
               <t>Updated draft-ietf-netmod-snmp-cfg reference to RFC 7407 (issue #28).</t>
               <t>Added description statements for groupings (issue #29).</t>

@@ -1,5 +1,5 @@
 module: ietf-netconf-server
    +--rw netconf-server
-      +--rw session-options {session-options}?
+      +--rw session-options
          +--rw hello-timeout?   uint32
          +--rw idle-timeout?    uint32
