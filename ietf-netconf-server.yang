@@ -121,7 +121,8 @@ module ietf-netconf-server {
 
   grouping session-options-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container session-options {
       description
         "NETCONF session options, independent of transport or
@@ -171,7 +172,8 @@ module ietf-netconf-server {
 
   grouping listen-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container listen {
       description
         "Configures listen behavior";
@@ -189,11 +191,11 @@ module ietf-netconf-server {
       list endpoint {
         key name;
         description
-          "List of endpoints to listen for connections on.";
+          "List of endpoints to listen for NETCONF connections on.";
         leaf name {
           type string;
           description
-            "An arbitrary name for the listen endpoint.";
+            "An arbitrary name for the NETCONF listen endpoint.";
         }
         choice transport {
           mandatory true;
@@ -239,7 +241,8 @@ module ietf-netconf-server {
 
   grouping call-home-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container call-home {
       if-feature call-home;
       description
@@ -289,7 +292,7 @@ module ietf-netconf-server {
         }
         container connection-type {
           description
-           "Indicates the kind of connection to be maintained.";
+           "Indicates the kind of connection to use.";
           choice connection-type {
             default persistent-connection;
             description
@@ -407,7 +410,8 @@ module ietf-netconf-server {
 
   grouping ssh-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container ssh {
       description
         "Configures SSH properties not specific to the listen 
@@ -423,11 +427,11 @@ module ietf-netconf-server {
 
   grouping tls-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container tls {
       description
-        "Configures TLS properties not specific to the listen 
-         or call-home use-cases";
+        "Configures TLS properties for authenticating clients.";
       if-feature tls;
       container client-auth {
         description
@@ -449,7 +453,7 @@ module ietf-netconf-server {
 
   grouping trusted-certs-grouping {
     description
-      "";
+      "This grouping is used by both the ssh and tls containers.";
     container trusted-ca-certs {
       description
         "A list of Certificate Authority (CA) certificates that
@@ -498,7 +502,8 @@ module ietf-netconf-server {
 
   grouping host-keys-container {
     description
-      "";
+      "This grouping is used by both the listen and 
+       call-home containers";
     container host-keys {
       description
         "Parent container for the list of host-keys.";
@@ -524,7 +529,8 @@ module ietf-netconf-server {
 
   grouping certificates-container {
     description
-      "";
+      "This grouping is used by both the listen and 
+       call-home containers";
     container certificates {
       description
         "Parent container for the list of certificates.";
@@ -547,7 +553,8 @@ module ietf-netconf-server {
 
   grouping address-and-port-grouping {
     description
-      "a common grouping";
+      "This grouping is usd by both the ssh and tls containers
+       for listen configuration.";
     leaf address {
       type inet:ip-address;
       description
@@ -564,8 +571,8 @@ module ietf-netconf-server {
 
   grouping endpoints-container {
     description
-      "Grouping for transport-specific configuration for
-       call-home connections.";
+      "This grouping is used by both the ssh and tls containers
+       for call-home configurations.";
     container endpoints {
       description
         "Container for the list of endpoints.";
@@ -603,12 +610,11 @@ module ietf-netconf-server {
 
   grouping keep-alives-container {
     description
-      "";
+      "This grouping is use by both listen and call-home configurations.";
     container keep-alives {
       description
         "Configures the keep-alive policy, to proactively test the 
-         aliveness of the NETCONF client, in order to know when a
-         new call home connection should be established.";
+         aliveness of the NETCONF client.";
       reference
         "RFC VVVV: NETCONF Server and RESTCONF Server Configuration
          Models, Section 4";
@@ -633,7 +639,8 @@ module ietf-netconf-server {
           be disconnected, which will trigger the reconnection 
           strategy).  The interval timer is reset after each 
           transmission, thus an unresponsive NETCONF client will
-          be dropped after ~count-max * interval-secs seconds.";
+          be dropped after approximately (count-max * interval-secs)
+          seconds.";
       }
     }
   }

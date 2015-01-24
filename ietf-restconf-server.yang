@@ -89,7 +89,8 @@ module ietf-restconf-server {
 
   grouping listen-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container listen {
       description
         "Configures listen behavior";
@@ -107,11 +108,11 @@ module ietf-restconf-server {
       list endpoint {
         key name;
         description
-          "List of endpoints to listen for connections on.";
+          "List of endpoints to listen for RESTCONF connections on.";
         leaf name {
           type string;
           description
-            "An arbitrary name for the listen endpoint.";
+            "An arbitrary name for the RESTCONF listen endpoint.";
         }
         choice transport {
           mandatory true;
@@ -142,7 +143,8 @@ module ietf-restconf-server {
 
   grouping call-home-container {
     description
-      "";
+      "This grouping is used only to help improve readability 
+       of the YANG module.";
     container call-home {
       if-feature call-home;
       description
@@ -160,7 +162,7 @@ module ietf-restconf-server {
         choice transport {
           mandatory true;
           description
-            "Selects between SSH and TLS transports.";
+            "Selects between TLS and any future transports augmented in.";
           case tls {
             if-feature tls;
             container tls {
@@ -296,7 +298,8 @@ module ietf-restconf-server {
 
   grouping certificates-container {
     description
-      "";
+      "This grouping is used by both the listen and
+       call-home containers";
     container certificates {
       description
         "Parent container for the list of certificates.";
@@ -319,7 +322,8 @@ module ietf-restconf-server {
 
   grouping address-and-port-grouping {
     description
-      "a common grouping";
+      "This grouping is usd by both the ssh and tls containers
+       for listen configuration.";
     leaf address {
       type inet:ip-address;
       description
@@ -336,8 +340,8 @@ module ietf-restconf-server {
 
   grouping endpoints-container {
     description
-      "Grouping for transport-specific configuration for
-       call-home connections.";
+      "This grouping is used by both the ssh and tls containers
+       for call-home configurations.";
     container endpoints {
       description
         "Container for the list of endpoints.";
@@ -375,12 +379,11 @@ module ietf-restconf-server {
 
   grouping keep-alives-container {
     description
-      "";
+      "This grouping is use by both listen and call-home configurations.";
     container keep-alives {
       description
         "Configures the keep-alive policy, to proactively test the 
-         aliveness of the RESTCONF client, in order to know when a
-         new call home connection should be established.";
+         aliveness of the RESTCONF client.";
       reference
         "RFC VVVV: NETCONF Server and RESTCONF Server Configuration 
          Models, Section 4";
@@ -405,7 +408,8 @@ module ietf-restconf-server {
           be disconnected, which will trigger the reconnection 
           strategy).  The interval timer is reset after each 
           transmission, thus an unresponsive RESTCONF client will
-          be dropped after ~count-max * interval-secs seconds.";
+          be dropped after approximately (count-max * interval-secs)
+          seconds.";
       }
     }
   }

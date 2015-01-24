@@ -125,6 +125,9 @@
             these diagrams is as follows:
               <list style="symbols">
                 <t>Brackets "[" and "]" enclose list keys.</t>
+                <t>Braces "{" and "}" enclose feature names, and indicate
+                that the named feature must be present for the subtree
+                to be present.</t>
                 <t>Abbreviations before data node names: "rw" means
                 configuration (read-write) and "ro" state data 
                 (read-only).</t>
@@ -175,7 +178,7 @@
           <section title="Support mapping authenticated NETCONF client-certificates to usernames">
             <t>Some NETCONF transports (e.g., TLS) need additional support to map authenticated
                transport-level sessions to a NETCONF username.  The NETCONF server model
-               defined herein should define an ability for this mapping to be configured."</t>
+               defined herein should define an ability for this mapping to be configured.</t>
           </section>
           <section title="Support both Listening for connections and Call Home">
             <t>The NETCONF and RESTCONF protocols were originally defined as having the 
@@ -246,7 +249,7 @@
             </section>
             <section anchor="keepalives" title="Keep-alives for persistent connections">
               <t>If a persistent connection is desired, it is the 
-              responsibility of the connection-initiator to actively
+              responsibility of the connection initiator to actively
               test the "aliveness" of the connection.  The connection
               initiator must immediately work to reestablish a 
               persistent connection as soon as the connection is
@@ -305,8 +308,7 @@ INSERT_TEXT_FROM_FILE(refs/listen-tree.txt)
               </t>
               <t>The above subtree illustrates how the ietf-netconf-server YANG module
               enables configuration for listening for remote connections,
-              as described in <xref target="RFC6242"/> and <xref
-              target="draft-ietf-netconf-call-home"/>.  Feature statements are used to limit both
+              as described in <xref target="RFC6242"/>.  Feature statements are used to limit both
               if listening is supported at all as well as for which transports.
               If listening for connections is supported, then the model 
               enables configuring a list of listening endpoints, each 
@@ -412,14 +414,14 @@ INSERT_TEXT_FROM_FILE(refs/restconf-listen-tree.txt)
               </t>
               <t>The above subtree illustrates how the ietf-restconf-server YANG module
               enables configuration for listening for remote connections,
-              as described in <xref target="draft-ietf-netconf-restconf"/> and <xref
-              target="draft-ietf-netconf-call-home"/>.  Feature statements are used to limit both
+              as described in <xref target="draft-ietf-netconf-restconf"/>.
+              Feature statements are used to limit both
               if listening is supported at all as well as for which transports.
               If listening for connections is supported, then the model 
               enables configuring a list of listening endpoints, each 
               configured with a
               user-specified name (the key field), the transport to use 
-              (i.e. SSH, TLS), and the IP address and port to listen on.
+              (i.e. TLS), and the IP address and port to listen on.
               The port field is optional, defaulting to the transport-specific
               port when not configured.
               Please see the YANG module (<xref target="restconf-yang-module"/>)
@@ -441,7 +443,7 @@ INSERT_TEXT_FROM_FILE(refs/restconf-call-home-tree.txt)
               is supported, then the model supports configuring a list of
               applications to connect to.  Each application is configured
               with a user-specified name (the key field), the transport to
-              be used (i.e. SSH, TLS), and a list of remote endpoints, each
+              be used (i.e. TLS), and a list of remote endpoints, each
               having a name, an IP address, and an optional port.  Additionally,
               the configuration for each remote application indicates the
               connection-type (persistent vs. periodic) and associated 
@@ -832,6 +834,15 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
               <t>Now imports by revision, per best practice</t>
               <t>Added support for RESTCONF server</t>
               <t>Added RFC Editor instructions</t>
+            </list>
+          </t>
+        </section>
+        <section title="05 to 06">
+          <t>
+            <list style="symbols">
+              <t>Fixed default RESTCONF server port value to be 443 (issue #26).</t>
+              <t>Added description statements for groupings (issue #29).</t>
+              <t>Added description for braces to tree diagram section (issue #30).</t>
             </list>
           </t>
         </section>
