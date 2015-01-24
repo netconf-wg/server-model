@@ -7,7 +7,7 @@ module ietf-netconf-server {
     prefix inet;
     revision-date 2013-07-15;
   }
-  import ietf-x509-cert-to-name {    // RFC ZZZZ
+  import ietf-x509-cert-to-name {    // RFC 7407
     prefix x509c2n;
     revision-date 2014-05-06;
   }

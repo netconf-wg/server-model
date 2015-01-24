@@ -13,6 +13,7 @@
 <!ENTITY rfc6520 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6520.xml">
 <!ENTITY rfc6536 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6536.xml">
 <!ENTITY rfc6991 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6991.xml">
+<!ENTITY rfc7407 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7407.xml">
 ]>
 
 <?rfc toc="yes"?>
@@ -69,7 +70,6 @@
               <t>draft-ietf-netconf-rfc5539bis</t>
               <t>draft-ietf-netconf-restconf</t>
               <t>draft-ietf-netconf-call-home</t>
-              <t>draft-ietf-netmod-snmp-cfg</t>
             </list>
           </t>
           <t>Artwork in this document contains shorthand references to drafts in 
@@ -79,7 +79,6 @@
               <t><spanx style="verb">WWWW</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-rfc5539bis</t>
               <t><spanx style="verb">XXXX</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-restconf</t>
               <t><spanx style="verb">YYYY</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-call-home</t>
-              <t><spanx style="verb">ZZZZ</spanx> --&gt; the assigned RFC value for draft-ietf-netmod-snmp-cfg</t>
             </list>
           </t>
           <t>Artwork in this document contains placeholder values for ports pending IANA assignment
@@ -384,8 +383,7 @@ INSERT_TEXT_FROM_FILE(refs/tls-tree.txt)
 
           <section title="YANG Module" anchor="netconf-yang-module">
             <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/>, and
-            <xref target="draft-ietf-netmod-snmp-cfg"/>.</t>
+            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
             <t>
             <figure>
               <!--<preamble>The YANG Module</preamble>-->
@@ -639,6 +637,7 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
           &rfc6520;
           &rfc6536;
           &rfc6991;
+          &rfc7407;
         <reference anchor='draft-ietf-netconf-rfc5539bis'>
           <front>
             <title>
@@ -662,21 +661,6 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
           <seriesInfo name='Internet-Draft'
                  value='draft-ietf-netconf-rfc5539bis-06' />
         </reference>
-         <reference anchor='draft-ietf-netmod-snmp-cfg'>
-           <front>
-             <title>A YANG Data Model for SNMP Configuration</title>
-             <author initials='M' surname='Bjorklund' 
-                fullname='Martin Bjorklund'>
-               <organization>Tail-f Systems</organization>
-             </author>
-             <author initials='J' surname='Schönwälder'
-                fullname='Jürgen Schönwälder'>
-               <organization>Jacobs University</organization>
-             </author>
-             <date month='September' day='18' year='2014' />
-           </front>
-           <seriesInfo name='Internet-Draft' value='draft-ietf-netmod-snmp-cfg-08' />
-         </reference>
          <reference anchor='draft-ietf-netconf-call-home'>
            <front>
              <title>
@@ -841,6 +825,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
           <t>
             <list style="symbols">
               <t>Fixed default RESTCONF server port value to be 443 (issue #26).</t>
+              <t>Updated draft-ietf-netmod-snmp-cfg reference to RFC 7407 (issue #28).</t>
               <t>Added description statements for groupings (issue #29).</t>
               <t>Added description for braces to tree diagram section (issue #30).</t>
             </list>
