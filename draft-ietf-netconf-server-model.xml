@@ -79,6 +79,7 @@
               <t><spanx style="verb">WWWW</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-rfc5539bis</t>
               <t><spanx style="verb">XXXX</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-restconf</t>
               <t><spanx style="verb">YYYY</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-call-home</t>
+              <t><spanx style="verb">ZZZZ</spanx> --&gt; the assigned RFC value for draft-thomson-httpbis-cant</t>
             </list>
           </t>
           <t>Artwork in this document contains placeholder values for ports pending IANA assignment
@@ -166,18 +167,18 @@
                home.  The data models provided herein should enable configuration
                of which keys to use on a per-use basis.</t>
           </section>
-          <section title="Support authenticating NETCONF clients certificates">
-            <t>When a certificate is used to authenticate a NETCONF client, either when
-               using the TLS transport or the SSH transport with X.509 certificates 
-               <xref target="RFC6187"/>, there is a need to configure the server to
-               know how to authenticate the certificates.  The server should be able 
-               to do this either by using path-validation to a configured trust anchor
+          <section title="Support authenticating NETCONF/RESTCONF clients certificates">
+            <t>When a certificate is used to authenticate a NETCONF or RESTCONF client,
+               there is a need to configure the server to know how to authenticate the 
+               certificates.  The server should be able to authenticate the client's
+               certificate either by using path-validation to a configured trust anchor
                or by matching the client-certificate to one previously configured.</t>
           </section>
-          <section title="Support mapping authenticated NETCONF client-certificates to usernames">
-            <t>Some NETCONF transports (e.g., TLS) need additional support to map authenticated
-               transport-level sessions to a NETCONF username.  The NETCONF server model
-               defined herein should define an ability for this mapping to be configured.</t>
+          <section title="Support mapping authenticated NETCONF/RESTCONF client certificates to usernames">
+            <t>When a client certifcate is used for TLS transport-level authentication,
+               the NETCONF/RESTCONF server must be able to derive a username from the 
+               authenticated certifcate.  Thus the modules defined herein should enable
+               this mapping to be configured.</t>
           </section>
           <section title="Support both Listening for connections and Call Home">
             <t>The NETCONF and RESTCONF protocols were originally defined as having the 
@@ -447,10 +448,28 @@ INSERT_TEXT_FROM_FILE(refs/restconf-call-home-tree.txt)
               Please see the YANG module (<xref target="restconf-yang-module"/>)
               for a complete description of these configuration knobs.</t>
             </section>
+            <section title="The &quot;client-cert-auth&quot; subtree">
+              <t>
+                <figure>
+                  <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/restconf-client-cert-auth-tree.txt)
+]]></artwork>
+                </figure>
+              </t>
+              <t>The above subtree illustrates how the ietf-restconf-server YANG module
+              enables configuration of client-certificate authentication.  Specifically,
+              this data-model provides 1) an ability to configure how client-certificates
+              are authenticated and 2) how authenticated client-certificates are mapped
+              to RESTCONF user names.  Please see the YANG module 
+              (<xref target="restconf-yang-module"/>) for a complete description of 
+              these configuration knobs.</t>
+            </section>
+
           </section>
 
           <section title="YANG Module" anchor="restconf-yang-module">
-            <t>This YANG module imports YANG types from <xref target="RFC6991"/>.</t>
+            <t>This YANG module imports YANG types from <xref
+            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
             <t>
             <figure>
               <artwork><![CDATA[
@@ -824,6 +843,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
             <list style="symbols">
               <t>Removed feature statement on the session-options container (issue #21).</t>
               <t>Fixed default RESTCONF server port value to be 443 (issue #26).</t>
+              <t>Added client-cert-auth subtree to ietf-restconf-server module (issue #27).</t>
               <t>Updated draft-ietf-netmod-snmp-cfg reference to RFC 7407 (issue #28).</t>
               <t>Added description statements for groupings (issue #29).</t>
               <t>Added description for braces to tree diagram section (issue #30).</t>

@@ -54,6 +54,7 @@ $(next).xml: $(draft).xml
 	cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp
 	mv tmp $@
+	rm refs/*-tree.txt
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md

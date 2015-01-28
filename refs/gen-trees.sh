@@ -6,4 +6,4 @@ pyang -f tree --tree-path=/netconf-server/tls ../ietf-netconf-server\@*.yang > t
 
 pyang -f tree --tree-path=/restconf-server/listen ../ietf-restconf-server\@*.yang > restconf-listen-tree.txt 
 pyang -f tree --tree-path=/restconf-server/call-home ../ietf-restconf-server\@*.yang > restconf-call-home-tree.txt 
-
+pyang -f tree --tree-path=/restconf-server/client-cert-auth ../ietf-restconf-server\@*.yang > restconf-client-cert-auth-tree.txt 

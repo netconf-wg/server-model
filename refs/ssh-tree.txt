@@ -1,8 +1,0 @@
-module: ietf-netconf-server
-   +--rw netconf-server
-      +--rw ssh {ssh}?
-         +--rw x509 {rfc6187}?
-            +--rw trusted-ca-certs
-            |  +--rw trusted-ca-cert*   binary
-            +--rw trusted-client-certs
-               +--rw trusted-client-cert*   binary
