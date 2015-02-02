@@ -93,10 +93,10 @@ module ietf-netconf-server {
      "RFC YYYY: NETCONF Call Home and RESTCONF Call Home";
   }
 
-  feature rfc6187 {
+  feature ssh-x509-certs {
     description
-      "The rfc6187 feature indicates that the NETCONF server supports
-       RFC 6187";
+      "The ssh-x509-certs feature indicates that the NETCONF server 
+       supports RFC 6187";
     reference
       "RFC 6187: X.509v3 Certificates for Secure Shell Authentication";
   }
@@ -415,7 +415,7 @@ module ietf-netconf-server {
          or call-home use-cases";
       if-feature ssh;
       container x509 {
-        if-feature rfc6187;
+        if-feature ssh-x509-certs;
         uses trusted-certs-grouping;
       }
     }

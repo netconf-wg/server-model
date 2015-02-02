@@ -859,6 +859,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
               <t>Updated draft-ietf-netmod-snmp-cfg reference to RFC 7407 (issue #28).</t>
               <t>Added description statements for groupings (issue #29).</t>
               <t>Added description for braces to tree diagram section (issue #30).</t>
+              <t>Renamed feature from "rfc6187" to "ssh-x509-certs" (issue #31).</t>
             </list>
           </t>
         </section>
