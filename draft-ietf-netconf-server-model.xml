@@ -557,29 +557,40 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
 
             <t>netconf-server/tls/client-auth/trusted-ca-certs:
             <list style="symbols">
-              <t>This container contains certificates that the server
-              is to use as trust anchors for authenticating TLS-specific
-              client certificates.  Write access to this node should be
-              protected.</t>
+              <t>This container contains certificates that a NETCONF server
+              is to use as trust anchors for authenticating X.509-based
+              client certificates.  Write access to this node is
+              protected using an nacm:default-deny-write statement.</t>
             </list>
             </t>
 
             <t>netconf-server/tls/client-auth/trusted-client-certs:
             <list style="symbols">
-              <t>This container contains certificates that the server
-              is to trust directly when authenticating TLS-specific
-              client certificates.  Write access to this node should be
-              protected.</t>
+              <t>This container contains certificates that a NETCONF server
+              is to trust directly when authenticating X.509-based
+              client certificates.  Write access to this node is
+              protected using an nacm:default-deny-write statement.</t>
             </list>
             </t>
 
-            <t>netconf-server/tls/client-auth/cert-map:
+            <t>restconf-server/tls/client-auth/trusted-ca-certs:
             <list style="symbols">
-              <t>This container contains a user name that some deployments
-              may consider sensitive information.  Read access to this 
-              node may need to  be guarded.</t>
+              <t>This container contains certificates that a RESTCONF server
+              is to use as trust anchors for authenticating X.509-based
+              client certificates.  Write access to this node is
+              protected using an nacm:default-deny-write statement.</t>
             </list>
             </t>
+
+            <t>restconf-server/tls/client-auth/trusted-client-certs:
+            <list style="symbols">
+              <t>This container contains certificates that a RESTCONF server
+              is to trust directly when authenticating X.509-based
+              client certificates.  Write access to this node is
+              protected using an nacm:default-deny-write statement.</t>
+            </list>
+            </t>
+
         </section>
 
         <section title="IANA Considerations">
@@ -842,6 +853,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
           <t>
             <list style="symbols">
               <t>Removed feature statement on the session-options container (issue #21).</t>
+              <t>Added NACM statements to YANG modules for sensitive nodes (issue #24).</t>
               <t>Fixed default RESTCONF server port value to be 443 (issue #26).</t>
               <t>Added client-cert-auth subtree to ietf-restconf-server module (issue #27).</t>
               <t>Updated draft-ietf-netmod-snmp-cfg reference to RFC 7407 (issue #28).</t>

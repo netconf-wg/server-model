@@ -3,13 +3,17 @@ module ietf-netconf-server {
   namespace "urn:ietf:params:xml:ns:yang:ietf-netconf-server";
   prefix "ncserver";
 
+  import ietf-netconf-acm {
+    prefix nacm;                     // RFC 6536
+    revision-date 2012-02-22;
+  }
   import ietf-inet-types {           // RFC 6991
     prefix inet;
     revision-date 2013-07-15;
   }
   import ietf-x509-cert-to-name {    // RFC 7407
     prefix x509c2n;
-    revision-date 2014-05-06;
+    revision-date 2014-12-10;
   }
  
   organization
@@ -461,6 +465,7 @@ module ietf-netconf-server {
       leaf-list trusted-ca-cert {
         type binary;
         ordered-by system;
+        nacm:default-deny-write;
         description
           "The binary certificate structure as specified by RFC 
            5246, Section 7.4.6, i.e.,: opaque ASN.1Cert<1..2^24>;
@@ -479,6 +484,7 @@ module ietf-netconf-server {
       leaf-list trusted-client-cert {
         type binary;
         ordered-by system;
+        nacm:default-deny-write;
         description
           "The binary certificate structure, as
            specified by RFC 5246, Section 7.4.6, i.e.,:
