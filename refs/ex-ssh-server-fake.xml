@@ -1,0 +1,20 @@
+<fake-ssh-server xmlns="urn:ietf:params:xml:ns:yang:ietf-ssh-server">
+  <host-keys>
+    <host-key>
+      <name>IDevID</name>
+      <certificate>
+        IDevID Certificate
+      </certificate>
+    </host-key>
+  </host-keys>
+  </certificates>
+  <client-cert-auth>
+    <trusted-ca-certs>
+      Trusted certificates for netconf/restconf clients
+    </trusted-ca-certs>
+    <trusted-client-certs>
+      Trust anchors for netconf/restconf clients
+    </trusted-client-certs>
+  </client-cert-auth>
+</fake-ssh-server>
+

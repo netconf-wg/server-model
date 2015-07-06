@@ -1,18 +1,22 @@
-module ietf-netconf-server {
+module ietf-netconf-server-new {
   yang-version 1.1;
 
-  namespace "urn:ietf:params:xml:ns:yang:ietf-netconf-server";
+  namespace "urn:ietf:params:xml:ns:yang:ietf-netconf-server-new";
   prefix "ncserver";
 
-  import ietf-netconf-acm {
-    prefix nacm;                     // RFC 6536
-  }
   import ietf-inet-types {           // RFC 6991
     prefix inet;
   }
   import ietf-x509-cert-to-name {    // RFC 7407
     prefix x509c2n;
+  }  
+  import ietf-ssh-server {           // RFC VVVV
+    prefix ss;
   }
+  import ietf-tls-server {           // RFC VVVV
+    prefix ts;
+  }
+
  
   organization
    "IETF NETCONF (Network Configuration) Working Group";
@@ -106,7 +110,6 @@ module ietf-netconf-server {
   }
 
 
-
   // top-level container  (groupings below)
   container netconf-server {
     description
@@ -178,7 +181,7 @@ module ietf-netconf-server {
                   default 830;
                 }
               }
-              uses host-keys-grouping;
+              uses ss:ssh-server-grouping;
             }
           }
           case tls {
@@ -192,7 +195,7 @@ module ietf-netconf-server {
                   default 6513;
                 }
               }
-              uses certificates-grouping;
+              uses tls-server-grouping;
             }
           }
         }
@@ -228,7 +231,7 @@ module ietf-netconf-server {
                   default 7777;
                 }
               }
-              uses host-keys-grouping;
+              uses ss:ssh-server-grouping;
             }
           }
           case tls {
@@ -242,7 +245,7 @@ module ietf-netconf-server {
                   default 8888;
                 }
               }
-              uses certificates-grouping;
+              uses tls-server-grouping;
             }
           }
         }
@@ -343,9 +346,9 @@ module ietf-netconf-server {
                   default 60;
                   description
                    "The maximum amount of unconnected time the NETCONF
-                    server will wait before establishing a connection
-                    to the NETCONF client.   The NETCONF server may 
-                    initiate a connection before this time if desired 
+                    server will wait before re-establishing a connection
+                    to the NETCONF client.  The NETCONF server may 
+                    initiate a connection before this time if desired
                     (e.g., to deliver a notification).";
                 }
               }
@@ -396,34 +399,22 @@ module ietf-netconf-server {
         }
       }
     }
+  }
 
-    container ssh {
-      description
-        "Configures SSH properties not specific to the listen 
-         or call-home use-cases";
-      if-feature "(ssh-listen or ssh-call-home)";
-      container x509 {
-        if-feature ssh-x509-certs;
-        uses trusted-certs-grouping;
-      }
-    }
-
-    container tls {
-      description
-        "Configures TLS properties for authenticating clients.";
-      if-feature "(tls-listen or tls-call-home)";
-      container client-auth {
-        description
-          "Container for TLS client authentication configuration.";
-        uses trusted-certs-grouping;
+  grouping tls-server-grouping {
+    description
+      "An augmentation of tls-server-grouping, as defined in the 
+       ietf-tls-server module, to add in cert-maps.";
+    uses ts:tls-server-grouping {
+      augment "client-auth" {
         container cert-maps {
           uses x509c2n:cert-to-name;
           description
            "The cert-maps container is used by a NETCONF server to
             map the NETCONF client's presented X.509 certificate to a
             NETCONF username.  If no matching and valid cert-to-name
-            list entry can be found, then the NETCONF server MUST 
-            close the connection, and MUST NOT accept NETCONF 
+            list entry can be found, then the NETCONF server MUST
+            close the connection, and MUST NOT accept NETCONF
             messages over it.";
           reference
             "RFC WWWW: NETCONF over TLS, Section 7";
@@ -432,106 +423,7 @@ module ietf-netconf-server {
     }
   }
 
-  grouping trusted-certs-grouping {
-    description
-      "This grouping is used by both the ssh and tls containers.";
-    container trusted-ca-certs {
-      description
-        "A list of Certificate Authority (CA) certificates that
-         a NETCONF server can use to authenticate NETCONF client
-         certificates.";
-      reference
-        "RFC WWWW: NETCONF over TLS, Sections 5 and 7.
-         RFC 4253: The Secure Shell (SSH) Transport Layer Protocol,
-                   Section 8, #3.
-         RFC 6187: X.509v3 Certificates for Secure Shell 
-                   Authentication.";
-      leaf-list trusted-ca-cert {
-        type binary;
-        nacm:default-deny-write;
-        description
-          "The binary certificate structure as specified by RFC 
-           5246, Section 7.4.6, i.e.,: opaque ASN.1Cert<1..2^24>;
-          ";
-        reference
-          "RFC 5246: The Transport Layer Security (TLS)
-                     Protocol Version 1.2";
-      }
-    }
-    container trusted-client-certs {
-      description
-        "A list of client certificates that a NETCONF server can
-         use to authenticate a NETCONF client's certificate.  A
-         client's certificate is authenticated if it is an exact
-         match to a configured trusted client certificate.";
-      leaf-list trusted-client-cert {
-        type binary;
-        nacm:default-deny-write;
-        description
-          "The binary certificate structure, as
-           specified by RFC 5246, Section 7.4.6, i.e.,:
-
-             opaque ASN.1Cert<1..2^24>;
-
-          ";
-        reference
-          "RFC 5246: The Transport Layer Security (TLS)
-                     Protocol Version 1.2";
-      }
-    }
-  }
-
-  grouping host-keys-grouping {
-    description
-      "This grouping is used by both the listen and 
-       call-home containers";
-    container host-keys {
-      description
-        "Parent container for the list of host-keys.";
-      leaf-list host-key {
-        type string;
-        min-elements 1;
-        ordered-by user;
-        description
-          "A user-ordered list of host-keys the SSH server 
-           considers when composing the list of server host
-           key algorithms it will send to the client in its
-           SSH_MSG_KEXINIT message.  The value of the string
-           is the unique identifier for a host-key configured
-           on the system.  How valid values are discovered is 
-           outside the scope of this module, but they are 
-           envisioned to be the keys for a list of host-keys
-           provided by another YANG module";
-        reference
-          "RFC 4253: The SSH Transport Layer Protocol, Section 7";
-      }
-    }
-  }
-
-  grouping certificates-grouping {
-    description
-      "This grouping is used by both the listen and 
-       call-home containers";
-    container certificates {
-      description
-        "Parent container for the list of certificates.";
-      leaf-list certificate {
-        type string;
-        min-elements 1;
-        description
-          "An unordered list of certificates the TLS server can pick 
-           from when sending its Server Certificate message.  The value
-           of the string is the unique identifier for a certificate 
-           configured on the system.  How valid values are discovered
-           is outside the scope of this module, but they are envisioned
-           to be the keys for a list of certificates provided 
-           by another YANG module";
-        reference
-          "RFC 5246: The TLS Protocol, Section 7.4.2";
-      }
-    }
-  }
-
+  
   grouping address-and-port-grouping {
     description
       "This grouping is used by both the ssh and tls containers

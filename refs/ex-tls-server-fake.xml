@@ -1,0 +1,16 @@
+<fake-tls-server xmlns="urn:ietf:params:xml:ns:yang:ietf-tls-server">
+  </certificates>
+    <certificate>
+      IDevID Certificate
+    </certificate>
+  </certificates>
+  <client-auth>
+    <trusted-ca-certs>
+      Trusted certificates for netconf/restconf clients
+    </trusted-ca-certs>
+    <trusted-client-certs>
+      Trust anchors for netconf/restconf clients
+    </trusted-client-certs>
+  </client-auth>
+</fake-tls-server>
+

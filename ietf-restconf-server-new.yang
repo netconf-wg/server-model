@@ -1,7 +1,7 @@
-module ietf-restconf-server {
+module ietf-restconf-server-new {
   yang-version 1.1;
 
-  namespace "urn:ietf:params:xml:ns:yang:ietf-restconf-server";
+  namespace "urn:ietf:params:xml:ns:yang:ietf-restconf-server-new";
   prefix "rcserver";
 
   import ietf-netconf-acm {
@@ -12,6 +12,9 @@ module ietf-restconf-server {
   }
   import ietf-x509-cert-to-name {    // RFC 7407
     prefix x509c2n;
+  }
+  import ietf-tls-server {           // RFC VVVV
+    prefix ts;
   }
 
   organization
@@ -133,7 +136,7 @@ module ietf-restconf-server {
                 description
                  "The port number the RESTCONF server will listen on.";
               }
-              uses certificates-grouping;
+              uses tls-server-grouping;
             }
           }
         }
@@ -199,7 +202,7 @@ module ietf-restconf-server {
                   }
                 }
               }
-              uses certificates-grouping;
+              uses tls-server-grouping;
             }
           }
         }
@@ -327,85 +330,26 @@ module ietf-restconf-server {
         }
       }
     }
-
-    container client-cert-auth {
-      if-feature client-cert-auth;
-      description
-        "Container for TLS client certificate authentication
-         configuration.";
-      container trusted-ca-certs {
-        description
-          "A list of Certificate Authority (CA) certificates that
-           a RESTCONF server can use to authenticate RESTCONF client
-           certificates.";
-        reference
-          "RFC XXXX: RESTCONF Protocol, Sections 2.3 and 2.5.";
-        leaf-list trusted-ca-cert {
-          type binary;
-          nacm:default-deny-write;
-          description
-            "The binary certificate structure as specified by RFC 
-             5246, Section 7.4.6, i.e.,: opaque ASN.1Cert<1..2^24>;
-            ";
-          reference
-            "RFC 5246: The Transport Layer Security (TLS)
-                       Protocol Version 1.2";
-        }
-      }
-      container trusted-client-certs {
-        description
-          "A list of client certificates that a RESTCONF server can
-           use to authenticate a RESTCONF client's certificate.  A
-           client's certificate is authenticated if it is an exact
-           match to a configured trusted client certificate.";
-        leaf-list trusted-client-cert {
-          type binary;
-          nacm:default-deny-write;
-          description
-            "The binary certificate structure, as specified by RFC
-             5246, Section 7.4.6, i.e.,: opaque ASN.1Cert<1..2^24>;
-            ";
-          reference
-            "RFC 5246: The Transport Layer Security (TLS)
-                       Protocol Version 1.2";
-        }
-      }
-      container cert-maps {
-        uses x509c2n:cert-to-name;
-        description
-         "The cert-maps container is used by a RESTCONF server to
-          map the RESTCONF client's presented X.509 certificate to a
-          RESTCONF username.  If no matching and valid cert-to-name
-          list entry can be found, then the RESTCONF server MUST 
-          close the connection, and MUST NOT accept RESTCONF 
-          messages over it.";
-        reference
-          "RFC XXXX: RESTCONF Protocol, Section 2.5";
-      }
-    }
   }
 
-
-  grouping certificates-grouping {
+  grouping tls-server-grouping {
     description
-      "This grouping is used by both the listen and
-       call-home containers";
-    container certificates {
-      description
-        "Parent container for the list of certificates.";
-      leaf-list certificate {
-        type string;
-        min-elements 1;
-        description
-          "An unordered list of certificates the TLS server can pick 
-           from when sending its Server Certificate message.  The value 
-           of the string is the unique identifier for a certificate 
-           configured on the system.  How valid values are discovered 
-           is outside the scope of this module, but they are envisioned 
-           to be the keys for a list of certificates provided 
-           by another YANG module";
-        reference
-          "RFC 5246: The TLS Protocol, Section 7.4.2";
+      "An augmentation of tls-server-grouping, as defined in the 
+       ietf-tls-server module, to add in cert-maps.";
+    uses ts:tls-server-grouping {
+      augment "client-auth" {
+        container cert-maps {
+          uses x509c2n:cert-to-name;
+          description
+           "The cert-maps container is used by a NETCONF server to
+            map the NETCONF client's presented X.509 certificate to a
+            NETCONF username.  If no matching and valid cert-to-name
+            list entry can be found, then the NETCONF server MUST
+            close the connection, and MUST NOT accept NETCONF
+            messages over it.";
+          reference
+            "RFC WWWW: NETCONF over TLS, Section 7";
+        }
       }
     }
   }

@@ -16,7 +16,7 @@ EOF
 
 yang2dsdl -t get-reply ../$1
 
-basename=`echo $1 | sed 's/\.yang//'`
+basename=`echo $1 | sed 's/\@.*//'`
 xmllint --noout --relaxng $basename-get-reply.rng  $OUT 
 
 rm $OUT

@@ -1,0 +1,56 @@
+<netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server"
+     xmlns:x509c2n="urn:ietf:params:xml:ns:yang:ietf-x509-cert-to-name">
+  <listen>
+    <endpoint>
+      <name>netconf/tls</name>
+      <tls>
+        <address>11.22.33.44</address>
+        <certificates>
+          <certificate>IDevID Certificate</certificate>
+        </certificates>
+        <client-auth>
+          <trusted-ca-certs>
+            Trusted netconf/restconf client certificates
+          </trusted-ca-certs>
+          <trusted-client-certs>
+            Trust anchors for netconf/restconf clients
+          </trusted-client-certs>
+          <cert-maps>
+            <cert-to-name>
+              <id>1</id>
+              <fingerprint>11:0A:05:11:00</fingerprint>
+              <map-type>x509c2n:san-any</map-type>
+            </cert-to-name>
+            <cert-to-name>
+              <id>2</id>
+              <fingerprint>B3:4F:A1:8C:54</fingerprint>
+              <map-type>x509c2n:specified</map-type>
+              <name>scooby-doo</name>
+            </cert-to-name>
+          </cert-maps>
+        </client-auth>
+      </tls>
+    </endpoint>
+  </listen>
+  <call-home>
+    <netconf-client>
+      <name>config-mgr</name>
+      <tls>
+        <endpoints>
+          <endpoint>
+            <name>east-data-center</name>
+            <address>22.33.44.55</address>
+          </endpoint>
+          <endpoint>
+            <name>west-data-center</name>
+            <address>33.44.55.66</address>
+          </endpoint>
+        </endpoints>
+        <certificates>
+          <certificate>IDevID Certificate</certificate>
+        </certificates>
+      </tls>
+    </netconf-client>
+  </call-home>
+</netconf-server>
+

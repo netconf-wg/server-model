@@ -1,0 +1,56 @@
+<netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+  <listen>
+    <endpoint>
+      <name>netconf/ssh</name>
+      <ssh>
+        <address>11.22.33.44</address>
+        <host-keys>
+          <host-key>
+            <public-key>my-rsa-key</public-key>
+          </host-key>
+          <host-key>
+            <certificate>TPM key</certificate>
+          </host-key>
+        </host-keys>
+        <client-cert-auth>
+          <trusted-ca-certs>
+            Trusted netconf/restconf client certificates
+          </trusted-ca-certs>
+          <trusted-client-certs>
+            Trust anchors for netconf/restconf clients
+          </trusted-client-certs>
+        </client-cert-auth>
+      </ssh>
+    </endpoint>
+  </listen>
+  <call-home>
+    <netconf-client>
+      <name>config-mgr</name>
+      <ssh>
+        <endpoints>
+          <endpoint>
+            <name>east-data-center</name>
+            <address>11.22.33.44</address>
+          </endpoint>
+          <endpoint>
+            <name>west-data-center</name>
+            <address>55.66.77.88</address>
+          </endpoint>
+        </endpoints>
+        <host-keys>
+          <host-key>
+            <certificate>TPM key</certificate>
+          </host-key>
+        </host-keys>
+        <client-cert-auth>
+          <trusted-ca-certs>
+            Trusted netconf/restconf client certificates
+          </trusted-ca-certs>
+          <trusted-client-certs>
+            Trust anchors for netconf/restconf clients
+          </trusted-client-certs>
+        </client-cert-auth>
+      </ssh>
+    </netconf-client>
+  </call-home>
+</netconf-server>

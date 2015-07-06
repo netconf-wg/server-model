@@ -1,23 +1,20 @@
 <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
-  <session-options>
-    <hello-timeout>600</hello-timeout>
-    <idle-timeout>3600</idle-timeout>
-  </session-options>
   <listen>
     <endpoint>
-      <name>primary-netconf-endpoint</name>
-      <tls>
+      <name>netconf/ssh</name>
+      <ssh>
         <address>11.22.33.44</address>
-        <certificates>
-          <certificate>fw1.east.example.com</certificate>
-        </certificates>
-      </tls>
+        <host-keys>
+          <host-key>my-rsa-key</host-key>
+          <host-key>my-dss-key</host-key>
+        </host-keys>
+      </ssh>
     </endpoint>
   </listen>
   <call-home>
-    <application>
+    <netconf-client>
       <name>config-mgr</name>
-      <tls>
+      <ssh>
         <endpoints>
           <endpoint>
             <name>east-data-center</name>
@@ -28,14 +25,14 @@
             <address>55.66.77.88</address>
           </endpoint>
         </endpoints>
-        <certificates>
-          <certificate>fw1.east.example.com</certificate>
-        </certificates>
-      </tls>
-    </application>
+        <host-keys>
+          <host-key>my-call-home-x509-key</host-key>
+        </host-keys>
+      </ssh>
+    </netconf-client>
   </call-home>
-  <tls>
-    <client-auth>
+  <ssh>
+    <x509>
       <trusted-ca-certs>
         <trusted-ca-cert>
           QW4gRWFzdGVyIGVnZywgZm9yIHRob3NlIHdobyBtaWdodCBsb29rICA6KQo=
@@ -49,19 +46,6 @@
           SSBhbSB0aGUgd2FscnVzLCBnb28gZ29vIGcnam9vYi4K
         </trusted-client-cert>
       </trusted-client-certs>
-      <cert-maps>
-        <cert-to-name>
-          <id>1</id>
-          <fingerprint>11:0A:05:11:00</fingerprint>
-          <map-type>x509c2n:san-any</map-type>
-        </cert-to-name>
-        <cert-to-name>
-          <id>2</id>
-          <fingerprint>11:0A:05:11:00</fingerprint>
-          <map-type>x509c2n:specified</map-type>
-          <name>Joe Cool</name>
-        </cert-to-name>
-      </cert-maps>
-    </client-auth>
-  </tls>
+    </x509>
+  </ssh>
 </netconf-server>

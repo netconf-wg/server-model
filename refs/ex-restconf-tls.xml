@@ -11,7 +11,7 @@
     </endpoint>
   </listen>
   <call-home>
-    <application>
+    <restconf-client>
       <name>config-mgr</name>
       <tls>
         <endpoints>
@@ -28,6 +28,6 @@
           <certificate>fw1.east.example.com</certificate>
         </certificates>
       </tls>
-    </application>
+    </restconf-client>
   </call-home>
 </restconf-server>
