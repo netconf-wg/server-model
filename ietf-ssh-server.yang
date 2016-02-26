@@ -4,8 +4,12 @@ module ietf-ssh-server {
   namespace "urn:ietf:params:xml:ns:yang:ietf-ssh-server";
   prefix "ts";
 
+  import ietf-inet-types {           // RFC 6991
+    prefix inet;
+  }
   import ietf-keychain {
     prefix kc;                       // RFC VVVV
+    revision-date YYYY-MM-DD;
   }
 
   organization
@@ -53,18 +57,19 @@ module ietf-ssh-server {
   // features
   feature ssh-x509-certs {
     description
-      "The ssh-x509-certs feature indicates that the NETCONF server
-       supports RFC 6187";
+      "The ssh-x509-certs feature indicates that the NETCONF 
+       server supports RFC 6187";
     reference
-      "RFC 6187: X.509v3 Certificates for Secure Shell Authentication";
+      "RFC 6187: X.509v3 Certificates for Secure Shell 
+       Authentication";
   }
 
   // grouping
-  grouping ssh-server-grouping {
+  grouping non-listening-ssh-server-grouping {
     description
       "A reusable grouping for a SSH server that can be used as a
        basis for specific SSH server instances.";
-    
+
     container host-keys {
       description
         "The list of host-keys the SSH server will present when
@@ -74,7 +79,7 @@ module ietf-ssh-server {
         min-elements 1;
         ordered-by user;
         description
-          "An ordered list of hostkeys the SSH server advertises
+          "An ordered list of host keys the SSH server advertises
            when sending its ??? message.";
         reference
           "RFC ????: ...";
@@ -85,9 +90,12 @@ module ietf-ssh-server {
             "An arbitrary name for this host-key";
         }
         choice type {
+          description
+            "The type of host key being specified";
           leaf public-key {
             type leafref {
-              path "/kc:keychain/kc:private-keys/kc:private-key/kc:name";
+              path "/kc:keychain/kc:private-keys/kc:private-key/"
+                   + "kc:name";
             }
             description
               "The name of a private-key in the keychain.";
@@ -95,7 +103,8 @@ module ietf-ssh-server {
           leaf certificate {
             if-feature ssh-x509-certs;
             type leafref {
-              path "/kc:keychain/kc:private-keys/kc:private-key/kc:certificates/kc:certificate/kc:name";
+              path "/kc:keychain/kc:private-keys/kc:private-key/"
+                   + "kc:certificates/kc:certificate/kc:name";
             }
             description
               "The name of a certificate in the keychain.";
@@ -132,6 +141,41 @@ module ietf-ssh-server {
       }
     }
   }
+
+
+  grouping listening-ssh-server-grouping {
+    description
+      "A reusable grouping for a SSH server that can be used as a
+       basis for specific SSH server instances.";
+    leaf address {
+      type inet:ip-address;
+      description
+       "The IP address of the interface to listen on. The SSH 
+        server will listen on all interfaces if no value is
+        specified.";
+    }
+    leaf port {
+      type inet:port-number;
+      mandatory true;  // will a default augmented in work?
+      description
+       "The local port number on this interface the SSH server 
+        listens on.";
+    }
+    uses non-listening-ssh-server-grouping;
+  }
+
+  // RFC Editor: please remove the following container block
+  //             when publishing this document as an RFC.
+  container listening-ssh-server {
+    description
+      "This container is only present to enable `pyang` 
+       tree diagram output, as a grouping by itself has
+       no protocol accessible nodes to output.";
+
+       uses listening-ssh-server-grouping;
+  }
+
+
 }
 
 

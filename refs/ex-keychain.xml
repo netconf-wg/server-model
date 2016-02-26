@@ -3,9 +3,8 @@
   <!-- private keys and associated certificates -->
   <private-keys>
     <private-key>
-      <name>TPM key</name>
-      <algorithm>rsa</algorithm>
-      <key-length>2048</key-length>
+      <name>ex-key-sect571r1</name>
+      <algorithm>sect571r1</algorithm>
       <public-key>
         cztvaWRoc2RmZ2tqaHNkZmdramRzZnZzZGtmam5idnNvO2RmanZvO3NkZ
         mJpdmhzZGZpbHVidjtvc2lkZmhidml1bHNkYmZ2aXNiZGZpYmhzZG87Zm
@@ -13,8 +12,8 @@
       </public-key>
       <certificates>
         <certificate>
-          <name>IDevID Certificate</name>
-          <chain>
+          <name>ex-key-sect571r1-cert</name>
+          <data>
             LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNrekNDQWZ5Z
             0F3SUJBZ0lKQUpRT2t3bGpNK2pjTUEwR0NTcUdTSWIzRFFFQkJRVU
             FNRFF4Q3pBSkJnTlYKQkFZVEFsVlRNUkF3RGdZRFZRUUtFd2RsZUd
@@ -32,7 +31,7 @@
             TXp4YXJCbFpDSHlLCklVbC9GVzRtV1RQS1VDeEtFTE40NEY2Zmk2d
             c4d0tSSElkYW1WL0pGTmlQS0VXSTF4K1I1aDZmazcrQzQ1QXg1RWV
             SWHgzZjdVM2xZTgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-          </chain>
+          </data>
         </certificate>
       </certificates>
     </private-key>
@@ -40,7 +39,12 @@
 
   <!-- trusted netconf/restconf client certificates -->
   <trusted-certificates>
-    <name>Trusted certificates for netconf/restconf client</name>
+    <name>explicitly-trusted-client-certs</name>
+    <description>
+      Specific client authentication certificates that are to be
+      explicitly trusted NETCONF/RESTCONF clients.  These are 
+      needed for client certificates not signed by our CA.
+    </description>
     <trusted-certificate>
       <name>George Jetson</name>
       <certificate>
@@ -86,9 +90,15 @@
 
   <!-- trust anchors for netconf/restconf clients -->
   <trusted-certificates>
-    <name>Trust anchors for netconf/restconf clients</name>
+    <name>deployment-specific-ca-certs</name>
+    <description>
+      Trust anchors used only to authenticate NETCONF/RESTCONF
+      client connections.  Since our security policy only allows
+      authentication for clients having a certificate signed by
+      our CA, we only configure its certificate below.
+    </description>
     <trusted-certificate>
-      <name>Example.com</name>
+      <name>ca.example.com</name>
       <certificate>
         WmdsK2gyTTg3QmtGMjhWbW1CdFFVaWc3OEgrRkYyRTFwdSt4ZVRJbVFFM
         lLQllsdWpOcjFTMnRLR05EMUc2OVJpK2FWNGw2NTdZNCtadVJMZgpRYjk
@@ -109,9 +119,14 @@
 
   <!-- trust anchors for random HTTPS servers on Internet -->
   <trusted-certificates>
-    <name>Trust anchors for random HTTPS servers</name>
+    <name>common-ca-certs</name>
+    <description>
+      Trusted certificates to authenticate common HTTPS servers.
+      These certificates are similar to those that might be
+      shipped with a web browser.
+    </description>
     <trusted-certificate>
-      <name>Example.com</name>
+      <name>ex-certificate-authority</name>
       <certificate>
         NGcEk3UE90cnNFVjRwTUNBd0VBQWFPQ0FSSXdnZ0VPCk1CMEdBMVVkRGd
         VEJiZ0JTWEdlbUEKMnhpRHVOTVkvVHFLNWd4cFJBZ1ZOYUU0cERZd05ER

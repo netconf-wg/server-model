@@ -1,16 +1,17 @@
-<fake-tls-server xmlns="urn:ietf:params:xml:ns:yang:ietf-tls-server">
-  </certificates>
+<listening-tls-server
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-tls-server">
+  <port>6513</port>
+  <certificates>
     <certificate>
-      IDevID Certificate
+      <name>ex-key-sect571r1-cert</name>
     </certificate>
   </certificates>
   <client-auth>
     <trusted-ca-certs>
-      Trusted certificates for netconf/restconf clients
+      deployment-specific-ca-certs
     </trusted-ca-certs>
     <trusted-client-certs>
-      Trust anchors for netconf/restconf clients
+      explicitly-trusted-client-certs
     </trusted-client-certs>
   </client-auth>
-</fake-tls-server>
-
+</listening-tls-server>

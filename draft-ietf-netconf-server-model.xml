@@ -2,14 +2,12 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY rfc4252 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4252.xml">
-<!ENTITY rfc4253 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4253.xml">
 <!ENTITY rfc5246 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
 <!ENTITY rfc6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
 <!ENTITY rfc6187 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6187.xml">
 <!ENTITY rfc6241 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml">
 <!ENTITY rfc6242 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6242.xml">
 <!ENTITY rfc6335 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6335.xml">
-<!ENTITY rfc6536 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6536.xml">
 <!ENTITY rfc6991 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6991.xml">
 <!ENTITY rfc7407 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7407.xml">
 <!ENTITY rfc7589 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7589.xml">
@@ -54,7 +52,7 @@
             server configuration data model.  These data models enable configuration of 
             the NETCONF and RESTCONF services themselves, including which transports are
             supported, what ports the servers listen on, call-home parameters, client
-            authentication, and other related configuration parameters.</t>
+            authentication, and related parameters.</t>
         </abstract>
         <note title="Editorial Note (To be removed by RFC Editor)">
           <t>This draft contains many placeholder values that need to be replaced
@@ -76,7 +74,6 @@
               <t><spanx style="verb">VVVV</spanx> --&gt; the assigned RFC value for this draft</t>
               <t><spanx style="verb">XXXX</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-restconf</t>
               <t><spanx style="verb">YYYY</spanx> --&gt; the assigned RFC value for draft-ietf-netconf-call-home</t>
-              <t><spanx style="verb">ZZZZ</spanx> --&gt; the assigned RFC value for draft-thomson-httpbis-cant</t>
             </list>
           </t>
           <t>Artwork in this document contains placeholder values for ports pending IANA assignment
@@ -109,14 +106,14 @@
             server configuration data model.  These data models enable configuration of 
             the NETCONF and RESTCONF services themselves, including which transports are
             supported, what ports the servers listen on, call-home parameters, client
-            authentication, and other related configuration parameters.</t>
+            authentication, and related parameters.</t>
             <section title="Terminology">
               <t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL",
               "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
               and "OPTIONAL" in this document are to be interpreted as
               described in RFC 2119 <xref target="RFC2119"/>.</t>
             </section>
-            <section title="Tree Diagrams">
+            <section title="Tree Diagrams" anchor="tree-diagrams">
             <t>A simplified graphical representation of the data models
             is used in this document.  The meaning of the symbols in
             these diagrams is as follows:
@@ -212,7 +209,7 @@
               it becomes necessary to configure how a NETCONF/RESTCONF server should
               reconnect to the client should it lose its connection to one the client's
               endpoints.  For instance, the NETCONF/RESTCONF server may start with 
-              first endpoint defined in a user-ordered list of endpoints or with thei
+              first endpoint defined in a user-ordered list of endpoints or with the
               last endpoints it was connected to.</t>
             </section>
             <section title="Support both persistent and periodic connections">
@@ -261,8 +258,296 @@
           </section>
         </section>
 
-        <section title="The NETCONF Server Model">
+      <section title="High-Level Design">
+        <t>The solution presented in this document defines a configurable
+        keychain object, reusable groupings for SSH and TLS based servers,
+        and, finally, the configurable NETCONF and RESTCONF server objects,
+        which are the primary purpose for this draft.  Each of these are defined in
+        a distinct YANG module, thus a total of five YANG modules are defined
+        in this document.  The relationship between these five YANG modules
+        is  illustrated by the tree diagram below.</t>
+        <t>
+              <figure>
+                <artwork><![CDATA[
+                  +-------------+                 
+                  |ietf-keychain|                 
+                  +-------------+                 
+                      ^    ^
+                      |    |
+           <leafref>  |    |  <leafref>
+         +------------+    +------------+ 
+         |                              |
+  +---------------+            +------------------+ 
+  |ietf-ssh-server|            | ietf-tls-server  | 
+  +---------------+            +------------------+
+    ^                               ^       ^      
+    | <uses>                        |       |      
+    |            <augments>         |       |      
+    |          +--------------------+       | <augments>     
+    |          |                            |      
++-------------------+         +--------------------+
+|ietf-netconf-server|         |ietf-restconf-server|
++-------------------+         +--------------------+
+]]></artwork>
+              </figure>
+        </t>
+      </section>
+      <section title="Solution">
+        <t>Each of the following five sections relate to one of the YANG
+        modules depicted by the figure above.</t>
+
+        <section title="The Keychain Model" anchor="keychain-model">
+          <t>The keychain model depicted in this section provides a configurable
+          object having the following characteristics:
+            <list style="symbols">
+              <t>A semi-configurable list of private keys, each with one or more associated
+              certificates.  Though private keys can only be created via an RPC (see bullet
+              #3 below), the entries of the list may be renamed and have certificates 
+              associated with them after creation.</t>
+              <t>A configurable list of lists of trust anchor certificates.  This enables 
+              the server to have use-specific trust anchors.  For instance, one list of 
+              trust anchors might be used to authenticate management connections (e.g.,
+              client certificate-based authentication for NETCONF or RESTCONF connections),
+              and a different list of trust anchors might be used for when connecting to a
+              specific Internet-based service (e.g., a zero touch bootstrap server).</t>
+              <t>An RPC to request the server to generate a new private key using the
+              specified algorithm and key length.</t>
+              <t>An RPC to generate a certificate signing request for an existing private
+              key, a passed subject, and an optional attributes.  The signed certificate
+              returned from an external certificate authority (CA) can be set using a
+              standard configuration change request (e.g., &lt;edit-config&gt;).</t>
+            </list>
+          </t>
           <section title="Tree Diagram">
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-keychain-tree.txt)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="Example Usage">
+            <t>The following example illustrates the "generate-private-key" RPC in use with
+            the RESTCONF protocol and JSON encoding.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-keychain-rpc-gpk-restconf-json.xml)
+]]></artwork>
+              </figure>
+            </t>
+            <t>The following example illustrates the action statement
+               "generate-certificate-signing-request" action in use
+               with the NETCONF protocol.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-keychain-rpc-gcsr-netconf.xml)
+]]></artwork>
+              </figure>
+            </t>
+            <t>The following example illustrates what a fully configured keychain object
+            might look like.  The private-key shown below is consistent with the 
+            generate-private-key and generate-certificate-signing-request examples above.
+            This example also assumes that the resulting CA-signed certificate has been
+            configured back onto the server.  Lastly, this example shows that three
+            lists of trusted certificates having been configured.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-keychain.xml)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="YANG Model" anchor="keychain-yang-module">
+<!--
+            <t>This YANG module imports YANG types from <xref
+            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
+-->
+            <t>
+              <figure>
+                <artwork><![CDATA[
+
+<CODE BEGINS> file "ietf-keychain@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-keychain@YYYY-MM-DD.yang)
+
+<CODE ENDS>
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+        </section>
+
+
+        <section title="The SSH Server Model" anchor="ssh-server-model">
+          <t>The SSH Server model presented in this section presents two
+          YANG groupings, one for a server that opens a socket to accept
+          TCP connections on, and another for a server that has had the 
+          TCP connection opened for it already (e.g., inetd).</t>
+          <t>The SSH Server model (like the TLS Server model presented
+          below) is provided as a grouping so that it can be used in
+          different contexts.  For instance, the NETCONF Server model
+          presented in <xref target="netconf-server-model"/> uses one
+          grouping to configure a NETCONF server listening for 
+          connections and the other grouping to configure NETCONF
+          call home.</t>
+          <t>A shared characteristic between both groupings is the
+          ability to configure which host key is presented to
+          clients, the private key for which is held in the keychain
+          configuration presented before.  Another shared characteristic
+          is the ability to configure which trusted CA or client
+          certificates the server should be used to authenticate
+          clients when using X.509 based client certificates
+          <xref target="RFC6187"/>.</t>
+
+          <section title="Tree Diagram">
+            <t>The following tree diagram represents the data model for
+            the grouping used to configure an SSH server to listen for
+            TCP connections.  The tree diagram for the other grouping
+            is not provided, but it is the same except without the
+            "address" and "port" fields.</t>
+            <t>NOTE: the diagram below shows "listening-ssh-server" as
+            a YANG container (not a grouping).  This temporary container
+            was created only to enable the `pyang` tool to output the
+            tree diagram, as groupings by themselves have no protocol
+            accessible nodes, and hence `pyang` would output an empty
+            tree diagram.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-ssh-server-tree.txt)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="Example Usage">
+            <t>This section shows how it would appear if the temporary
+            listening-ssh-server container just mentioned above were
+            populated with some data.  This example is consistent with
+            the examples presented earlier in this document.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-ssh-server.xml)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="YANG Model" anchor="ssh-server-yang-module">
+<!--
+            <t>This YANG module imports YANG types from <xref
+            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
+-->
+            <t>
+              <figure>
+                <artwork><![CDATA[
+
+<CODE BEGINS> file "ietf-ssh-server@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-ssh-server@YYYY-MM-DD.yang)
+
+<CODE ENDS>
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+        </section>
+
+        <section title="The TLS Server Model" anchor="tls-server-model">
+          <t>The TLS Server model presented in this section presents two
+          YANG groupings, one for a server that opens a socket to accept
+          TCP connections on, and another for a server that has had the 
+          TCP connection opened for it already (e.g., inetd).</t>
+          <t>The TLS Server model (like the SSH Server model presented
+          above) is provided as a grouping so that it can be used in
+          different contexts.  For instance, the NETCONF Server model
+          presented in <xref target="netconf-server-model"/> uses one
+          grouping to configure a NETCONF server listening for 
+          connections and the other grouping to configure NETCONF
+          call home.</t>
+          <t>A shared characteristic between both groupings is the
+          ability to configure which server certificate is presented to
+          clients, the private key for which is held in the keychain
+          model presented in <xref target="keychain-model"/>.
+          Another shared characteristic is the ability to configure which
+          trusted CA or client certificates the server should be used to
+          authenticate clients.</t>
+
+          <section title="Tree Diagram">
+            <t>The following tree diagram represents the data model for
+            the grouping used to configure an TLS server to listen for
+            TCP connections.  The tree diagram for the other grouping
+            is not provided, but it is the same except without the
+            "address" and "port" fields.</t>
+            <t>NOTE: the diagram below shows "listening-ssh-server" as
+            a YANG container (not a grouping).  This temporary container
+            was created only to enable the `pyang` tool to output the
+            tree diagram, as groupings by themselves have no protocol
+            accessible nodes, and hence `pyang` would output an empty
+            tree diagram.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-tls-server-tree.txt)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="Example Usage">
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-tls-server.xml)
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+
+          <section title="YANG Model" anchor="tls-server-yang-module">
+<!--
+            <t>This YANG module imports YANG types from <xref
+            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
+-->
+            <t>
+              <figure>
+                <artwork><![CDATA[
+
+<CODE BEGINS> file "ietf-tls-server@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-tls-server@YYYY-MM-DD.yang)
+
+<CODE ENDS>
+]]></artwork>
+              </figure>
+            </t>
+          </section>
+        </section>
+
+        <section title="The NETCONF Server Model" anchor="netconf-server-model">
+          <t>The NETCONF Server model presented in this section supports servers
+          both listening for connections to accept as well as initiating call-home
+          connections.  This model also supports both the SSH and TLS transport
+          protocols, using the SSH Server and TLS Server groupings presented in
+          <xref target="ssh-server-model"/> and <xref target="tls-server-model"/>
+          respectively.  All private keys and trusted certificates are held in the
+          keychain model presented in <xref target="keychain-model"/>.  YANG
+          feature statements are used to enable implementations to advertise
+          which parts of the model the NETCONF server supports.</t>
+
+          <section title="Tree Diagram">
+            <t>The following tree diagram uses line-wrapping in order to comply
+            with xml2rfc validation.  This is annoying as I find that drafts (even
+            txt drafts) look just fine with long lines - maybe xml2rfc
+            should remove this warning? - or pyang could have an option to
+            suppress printing leafref paths?</t>
             <t>
               <figure>
                 <artwork><![CDATA[
@@ -273,37 +558,19 @@ INSERT_TEXT_FROM_FILE(refs/ietf-netconf-server-tree.txt)
           </section>
 
           <section title="Example Usage">
-            <section title="Configuring SSH Transport">
-              <t>
-                The following example illustrates the &lt;get&gt; response from a NETCONF server
-                that only supports SSH, both listening for incoming connections as well as 
-                calling home to a single NETCONF/RESTCONF client having two endpoints. 
-              </t>
-              <t>
-                <figure>
-                  <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-netconf-ssh.xml)
+            <t>Configuring a NETCONF Server to listen for NETCONF client
+            connections using both the SSH and TLS transport protocols,
+            as well as configuring call-home to two NETCONF clients,
+            one using SSH and the other using TLS.</t>
+            <t>This example is consistent with other examples presented
+            in this document.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-netconf-server.xml)
 ]]></artwork>
-                </figure>
-              </t>
-            </section>
-  
-            <section title="Configuring TLS Transport">
-              <t>
-                The following example illustrates the &lt;get&gt; response from a NETCONF server
-                that only supports TLS, both listening for incoming connections as well as 
-                calling home to a single NETCONF/RESTCONF client having two endpoints.  Please note also
-                the configurations for authenticating client certificates and mappings
-                authenticated certificates to NETCONF user names.
-              </t>
-              <t>
-                <figure>
-                  <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-netconf-tls.xml)
-]]></artwork>
-                </figure>
-              </t>
-            </section>
+              </figure>
+            </t>
           </section>
 
           <section title="YANG Model" anchor="netconf-yang-module">
@@ -324,64 +591,23 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-server@YYYY-MM-DD.yang)
           </section>
         </section>
 
-
-<!--
-              <t>The above subtree illustrates how the ietf-netconf-server YANG module
-              enables configuration for listening for remote connections,
-              as described in <xref target="RFC6242"/> and 
-              <xref target="RFC7589"/>.  "feature" statements are used to limit both
-              if listening is supported at all as well as for which transports.
-              If listening for connections is supported, then the model 
-              enables configuring a list of listening endpoints, each 
-              configured with a
-              user-specified name (the key field), the transport to use 
-              (i.e. SSH, TLS), and the IP address and port to listen on.
-              The port field is optional, defaulting to the transport-specific
-              port when not configured.
-              Please see the YANG module (<xref target="netconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
-
-
-              <t>The above subtree illustrates how the ietf-netconf-server YANG module
-              enables configuration for call home, as described in 
-              <xref target="draft-ietf-netconf-call-home"/>.  Feature 
-              statements are used to limit both if call-home is supported
-              at all as well as for which transports, if it is.  If call-home
-              is supported, then the model supports configuring a list of
-              NETCONF/RESTCONF clients to connect to.  Each NETCONF/RESTCONF client is configured
-              with a user-specified name (the key field), the transport to
-              be used (i.e. SSH, TLS), and a list of remote endpoints, each
-              having a name, an IP address, and an optional port.  Additionally,
-              the configuration for each remote NETCONF/RESTCONF client indicates the
-              connection-type (persistent vs. periodic) and associated 
-              parameters, as well as the reconnection strategy to use.
-              Please see the YANG module (<xref target="netconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
-
-
-              <t>The above subtree illustrates how the ietf-netconf-server YANG module
-              enables some SSH configuration independent of if the NETCONF
-              server is listening or calling home.  Specifically, when
-              ssh-x509-certs feature is supported, this data model provides an ability
-              to configure how client-certificates are authenticated.
-              Please see the YANG module (<xref target="netconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
-
-
-              <t>The above subtree illustrates how the ietf-netconf-server YANG module
-              enables TLS configuration independent of if the NETCONF 
-              server is listening or calling home.  Specifically, this 
-              data-model provides 1) an ability to configure how 
-              client-certificates are authenticated and 2) how authenticated
-              client-certificates are mapped to NETCONF user names.
-              Please see the YANG module (<xref target="netconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
-
--->
-
-
         <section title="The RESTCONF Server Model">
+          <t>The RESTCONF Server model presented in this section supports servers
+          both listening for connections to accept as well as initiating call-home
+          connections.  This model supports the TLS transport only, as RESTCONF
+          only supports HTTPS, using the TLS Server groupings presented in
+          <xref target="tls-server-model"/>.  All private keys and trusted 
+          certificates are held in the keychain model presented in
+          <xref target="keychain-model"/>.  YANG feature statements are used to
+          enable implementations to advertise which parts of the model the 
+          RESTCONF server supports.</t>
+
           <section title="Tree Diagram">
+            <t>The following tree diagram uses line-wrapping in order to comply
+            with xml2rfc validation.  This is annoying as I find that drafts (even
+            txt drafts) look just fine with long lines - maybe xml2rfc
+            should remove this warning? - or pyang could have an option to
+            suppress printing leafref paths?</t>
             <t>
               <figure>
                 <artwork><![CDATA[
@@ -392,20 +618,18 @@ INSERT_TEXT_FROM_FILE(refs/ietf-restconf-server-tree.txt)
           </section>
 
           <section title="Example Usage">
-            <section title="Configuring TLS Transport">
-              <t>
-                The following example illustrates the &lt;get&gt; response from a RESTCONF server
-                that only supports TLS, both listening for incoming connections as well as 
-                calling home to a single RESTCONF client having two endpoints.
-              </t>
-              <t>
-                <figure>
-                  <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-restconf-tls.xml)
+            <t>Configuring a RESTCONF Server to listen for RESTCONF client
+            connections, as well as configuring call-home to one 
+            RESTCONF client.</t>
+            <t>This example is consistent with other examples presented
+            in this document.</t>
+            <t>
+              <figure>
+                <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-restconf-server.xml)
 ]]></artwork>
-                </figure>
-              </t>
-            </section>
+              </figure>
+            </t>
           </section>
 
           <section title="YANG Model" anchor="restconf-yang-module">
@@ -426,51 +650,15 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
           </section>
         </section>
 
-
-<!--
-              <t>The above subtree illustrates how the ietf-restconf-server YANG module
-              enables configuration for listening for remote connections,
-              as described in <xref target="draft-ietf-netconf-restconf"/>.
-              "feature" statements are used to limit both
-              if listening is supported at all as well as for which transports.
-              If listening for connections is supported, then the model 
-              enables configuring a list of listening endpoints, each 
-              configured with a
-              user-specified name (the key field), the transport to use 
-              (i.e. TLS), and the IP address and port to listen on.
-              The port field is optional, defaulting to the transport-specific
-              port when not configured.
-              Please see the YANG module (<xref target="restconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
+      </section>
 
 
-              <t>The above subtree illustrates how the ietf-restconf-server YANG module
-              enables configuration for call home, as described in 
-              <xref target="draft-ietf-netconf-call-home"/>.  Feature 
-              statements are used to limit both if call-home is supported
-              at all as well as for which transports, if it is.  If call-home
-              is supported, then the model supports configuring a list of
-              RESTCONF clients to connect to.  Each RESTCONF client is configured
-              with a user-specified name (the key field), the transport to
-              be used (i.e. TLS), and a list of remote endpoints, each
-              having a name, an IP address, and an optional port.  Additionally,
-              the configuration for each remote RESTCONF client indicates the
-              connection-type (persistent vs. periodic) and associated 
-              parameters, as well as the reconnection strategy to use.
-              Please see the YANG module (<xref target="restconf-yang-module"/>)
-              for a complete description of these configuration knobs.</t>
-
-
-              <t>The above subtree illustrates how the ietf-restconf-server YANG module
-              enables configuration of client-certificate authentication.  Specifically,
-              this data-model provides 1) an ability to configure how client-certificates
-              are authenticated and 2) how authenticated client-certificates are mapped
-              to RESTCONF user names.  Please see the YANG module 
-              (<xref target="restconf-yang-module"/>) for a complete description of 
-              these configuration knobs.</t>
--->
+<!-- KENT -->
 
         <section title="Security Considerations">
+
+          <t>This section needs to be filled in...</t>
+
 <!--
             <t>A denial of service attack may occur if the NETCONF server's configuration
             limits the maximum number of NETCONF sessions it will accept (i.e. 
@@ -479,9 +667,14 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
             (i.e. set to zero).  As this attack can only occur after client authentication,
             it is not 
 -->
+
+<!--
+I removed all the NACM statements in the new modules
+
             <t>There are a number of data nodes defined in the 
-            "ietf-netconf-server" YANG module which are readable and/or 
-            writable that may be considered sensitive or vulnerable in some 
+            "ietf-netconf-server" and "ietf-restconf-server" YANG
+            modules which are readable and/or writable that may 
+            be considered sensitive or vulnerable in some 
             network environments.  Write and read operations to
             these data nodes can have a negative effect on network
             operations.  It is thus important to control write
@@ -523,7 +716,7 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
               protected using an nacm:default-deny-write statement.</t>
             </list>
             </t>
-
+-->
         </section>
 
         <section title="IANA Considerations">
@@ -551,14 +744,29 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
           <t>
             <figure>
                 <artwork><![CDATA[
+   name:         ietf-keychain
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-keychain
+   prefix:       kc
+   reference:    RFC VVVV
+
+   name:         ietf-ssh-server
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-ssh-server
+   prefix:       ssvr
+   reference:    RFC VVVV
+
+   name:         ietf-tls-server
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-tls-server
+   prefix:       tsvr
+   reference:    RFC VVVV
+
    name:         ietf-netconf-server
    namespace:    urn:ietf:params:xml:ns:yang:ietf-netconf-server
-   prefix:       ncserver
+   prefix:       ncsvr
    reference:    RFC VVVV
 
    name:         ietf-restconf-server
    namespace:    urn:ietf:params:xml:ns:yang:ietf-restconf-server
-   prefix:       rcserver
+   prefix:       rcsvr
    reference:    RFC VVVV
 ]]></artwork>
             </figure>
@@ -589,12 +797,10 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
     <back>
       <references title="Normative References">
          &rfc2119;
-         &rfc4253;
          &rfc6020;
          &rfc6187;
          &rfc6241;
          &rfc6242;
-         &rfc6536;
          &rfc6991;
          &rfc7407;
          &rfc7589;
@@ -648,252 +854,6 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server@YYYY-MM-DD.yang)
           <seriesInfo name="RFC" value="3688"/>
         </reference>
       </references>
-      
-      <section title="Alternative solution addressing Issue #49">
-        <t>Option #4 for Issue #49 proposed to define configuration for
-        a keychain and on-going discussion proposed to create reusable
-        groupings for SSH/TLS servers (referencing keys and certificates
-        held in the keychain) that the NETCONF/RESTCONF servers would
-        uses.   This relationship is illustrated by the diagram below.</t>
-        <t>
-              <figure>
-                <artwork><![CDATA[
-                  +-------------+                 
-                  |ietf-keychain|                 
-                  +-------------+                 
-                      ^    ^
-                      |    |
-           <leafref>  |    |  <leafref>
-         +------------+    +------------+ 
-         |                              |
-  +---------------+            +------------------+ 
-  |ietf-ssh-server|            | ietf-tls-server  | 
-  +---------------+            +------------------+
-    ^                               ^       ^      
-    | <uses>                        |       |      
-    |            <augments>         |       |      
-    |          +--------------------+       | <augments>     
-    |          |                            |      
-+-------------------+         +--------------------+
-|ietf-netconf-server|         |ietf-restconf-server|
-+-------------------+         +--------------------+
-]]></artwork>
-              </figure>
-        </t>
-        <t>The following sections each of the five YANG modules above.</t>
-
-        <section title="The Keychain Model">
-          <section title="Tree Diagram">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-keychain-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="Example Usage">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-keychain.xml)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="YANG Model" anchor="keychain-yang-module">
-<!--
-            <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
--->
-            <t>
-              <figure>
-                <artwork><![CDATA[
-
-<CODE BEGINS> file "ietf-keychain@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-keychain@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-        </section>
-
-
-        <section title="The SSH Server Model">
-          <section title="Tree Diagram">
-            <t>The following tree diagram is faked, as a module having only a grouping in it has no 
-            tree diagram.  However, for illustrative purposes, a container has been added as
-            nothing more than a "uses" statement of the grouping.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-ssh-server-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="Example Usage">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-ssh-server-fake.xml)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="YANG Model" anchor="ssh-server-yang-module">
-<!--
-            <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
--->
-            <t>
-              <figure>
-                <artwork><![CDATA[
-
-<CODE BEGINS> file "ietf-ssh-server@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-ssh-server@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-        </section>
-
-        <section title="The TLS Server Model">
-          <section title="Tree Diagram">
-            <t>The following tree diagram is faked, as a module having only a grouping in it has no 
-            tree diagram.  However, for illustrative purposes, a container has been added as
-            nothing more than a "uses" statement of the grouping.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-tls-server-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="Example Usage">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-tls-server-fake.xml)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="YANG Model" anchor="tls-server-yang-module">
-<!--
-            <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
--->
-            <t>
-              <figure>
-                <artwork><![CDATA[
-
-<CODE BEGINS> file "ietf-tls-server@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-tls-server@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-        </section>
-
-        <section title="The NETCONF Server Model">
-          <section title="Tree Diagram">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-netconf-server-new-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="Example Usage">
-            <t>Configuring an SSH Server</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-netconf-ssh-new.xml)
-]]></artwork>
-              </figure>
-            </t>
-            <t>Configuring a TLS Server</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-netconf-tls-new.xml)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="YANG Model" anchor="netconf-new-yang-module">
-            <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-
-<CODE BEGINS> file "ietf-netconf-server-new@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-netconf-server-new@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-        </section>
-
-        <section title="The RESTCONF Server Model">
-          <section title="Tree Diagram">
-            <t>
-              <figure>
-                <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-restconf-server-new-tree.txt)
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-
-          <section title="Example Usage">
-            <t>TBD</t>
-          </section>
-
-          <section title="YANG Model" anchor="restconf-new-yang-module">
-            <t>This YANG module imports YANG types from <xref
-            target="RFC6991"/> and <xref target="RFC7407"/>.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
-
-<CODE BEGINS> file "ietf-restconf-server-new@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-restconf-server-new@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
-        </section>
-
-      </section>
 
       <section title="Change Log">
         <section title="00 to 01">
@@ -992,6 +952,15 @@ INSERT_TEXT_FROM_FILE(ietf-restconf-server-new@YYYY-MM-DD.yang)
               <t>Fixed description text for the interval-secs leaf (issue #50).</t>
               <t>moved idle-time into the listen, persistent, and periodic subtrees (issue #51).</t>
               <t>put presence statements on containers where it makes sense (issue #53).</t>
+            </list>
+          </t>
+        </section>
+        <section title="07 to 08">
+          <t>
+            <list style="symbols">
+              <t>Per WG consensus, replaced body with the keychain-based approach described
+              in -07's Appendix.</t>
+              <t>Added a lot of introductory text, improved examples, and what not.</t>
             </list>
           </t>
         </section>
