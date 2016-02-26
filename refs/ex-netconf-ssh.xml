@@ -5,9 +5,21 @@
       <ssh>
         <address>11.22.33.44</address>
         <host-keys>
-          <host-key>my-rsa-key</host-key>
-          <host-key>my-dss-key</host-key>
+          <host-key>
+            <public-key>my-rsa-key</public-key>
+          </host-key>
+          <host-key>
+            <certificate>TPM key</certificate>
+          </host-key>
         </host-keys>
+        <client-cert-auth>
+          <trusted-ca-certs>
+            Trusted netconf/restconf client certificates
+          </trusted-ca-certs>
+          <trusted-client-certs>
+            Trust anchors for netconf/restconf clients
+          </trusted-client-certs>
+        </client-cert-auth>
       </ssh>
     </endpoint>
   </listen>
@@ -26,26 +38,19 @@
           </endpoint>
         </endpoints>
         <host-keys>
-          <host-key>my-call-home-x509-key</host-key>
+          <host-key>
+            <certificate>TPM key</certificate>
+          </host-key>
         </host-keys>
+        <client-cert-auth>
+          <trusted-ca-certs>
+            Trusted netconf/restconf client certificates
+          </trusted-ca-certs>
+          <trusted-client-certs>
+            Trust anchors for netconf/restconf clients
+          </trusted-client-certs>
+        </client-cert-auth>
       </ssh>
     </netconf-client>
   </call-home>
-  <ssh>
-    <x509>
-      <trusted-ca-certs>
-        <trusted-ca-cert>
-          QW4gRWFzdGVyIGVnZywgZm9yIHRob3NlIHdobyBtaWdodCBsb29rICA6KQo=
-        </trusted-ca-cert>
-      </trusted-ca-certs>
-      <trusted-client-certs>
-        <trusted-client-cert>
-          SSBhbSB0aGUgZWdnIG1hbiwgdGhleSBhcmUgdGhlIGVnZyBtZW4uCg==
-        </trusted-client-cert>
-        <trusted-client-cert>
-          SSBhbSB0aGUgd2FscnVzLCBnb28gZ29vIGcnam9vYi4K
-        </trusted-client-cert>
-      </trusted-client-certs>
-    </x509>
-  </ssh>
 </netconf-server>
