@@ -4,7 +4,7 @@ REQUEST
   <rpc message-id="101"
     xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
     <action xmlns="urn:ietf:params:xml:ns:yang:1">
-      <keychain xmlns="urn:ietf:params:xml:ns:yang:ietf-keychain">
+      <keychain xmlns="urn:ietf:params:xml:ns:yang:ietf-system-keychain">
         <private-keys>
           <generate-private-key>
             <name>ex-key-sect571r1</name>

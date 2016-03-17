@@ -89,7 +89,7 @@ module ietf-netconf-server {
       supports opening a port to accept NETCONF over TLS 
       client connections."; 
     reference
-     "RFC 5539: Using the NETCONF Protocol over Transport
+     "RFC 7589: Using the NETCONF Protocol over Transport
                 Layer Security (TLS) with Mutual X.509
                 Authentication";
   }
@@ -310,8 +310,8 @@ module ietf-netconf-server {
                     default 30;
                     description
                      "Sets the amount of time in seconds after which 
-		      if no data has been received from the SSH/TLS
-		      client, a SSH/TLS-level message will be sent 
+                      if no data has been received from the SSH/TLS
+                      client, a SSH/TLS-level message will be sent 
                       to test the aliveness of the SSH/TLS client.";
                   }
                   leaf max-attempts {

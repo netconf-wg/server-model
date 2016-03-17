@@ -41,7 +41,7 @@ clean:
 	-rm -f $(draft)-[0-9][0-9].xml
 	-rm -f ietf-*conf-server\@*.yang
 	-rm -f ietf-???-server\@*.yang
-	-rm -f ietf-keychain\@*.yang
+	-rm -f ietf-system-keychain\@*.yang
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
@@ -55,7 +55,7 @@ $(next).xml: $(draft).xml
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-restconf-server.yang > ietf-restconf-server\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-ssh-server.yang > ietf-ssh-server\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-tls-server.yang > ietf-tls-server\@$(shell date +%Y-%m-%d).yang
-	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-keychain.yang > ietf-keychain\@$(shell date +%Y-%m-%d).yang
+	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-system-keychain.yang > ietf-system-keychain\@$(shell date +%Y-%m-%d).yang
 
 	cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp

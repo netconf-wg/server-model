@@ -7,7 +7,7 @@ module ietf-tls-server {
   import ietf-inet-types {           // RFC 6991
     prefix inet;
   }
-  import ietf-keychain {
+  import ietf-system-keychain {
     prefix kc;                       // RFC VVVV
     revision-date YYYY-MM-DD;
   }
@@ -63,7 +63,11 @@ module ietf-tls-server {
     container certificates {
       description
         "The list of certificates the TLS server will present when
-         establishing a TLS connection.";
+         establishing a TLS connection in its Certificate message,
+         as defined in Section 7.4.2 in RRC 5246.";
+      reference
+        "RFC 5246:
+           The Transport Layer Security (TLS) Protocol Version 1.2";
       list certificate {
         key name;
         min-elements 1;
@@ -75,7 +79,8 @@ module ietf-tls-server {
         leaf name {
           type leafref {
             path "/kc:keychain/kc:private-keys/kc:private-key/"
-                 + "kc:certificates/kc:certificate/kc:name";
+                 + "kc:certificate-chains/kc:certificate-chain/"
+                 + "kc:certificate";
           }
           description
             "The name of the certificate in the keychain.";
@@ -133,20 +138,16 @@ module ietf-tls-server {
     uses non-listening-tls-server-grouping;
   }
 
-
-
-  // RFC Editor: please remove the following container block
-  //             when publishing this document as an RFC.
   container listening-tls-server {
     description
-      "This container is only present to enable `pyang` 
-       tree diagram output, as a grouping by itself has 
-       no protocol accessible nodes to output.";
+      "This container will be removed by the RFC Editor. This
+       container is currently only present in order to enable
+       the `pyang` tool to generate tree diagram output of this
+       module (used in the draft) as it otherwise would not
+       contain any protocol accessible nodes to output.";
 
        uses listening-tls-server-grouping;
   }
-
-
 }
 
 

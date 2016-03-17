@@ -7,7 +7,7 @@ module ietf-ssh-server {
   import ietf-inet-types {           // RFC 6991
     prefix inet;
   }
-  import ietf-keychain {
+  import ietf-system-keychain {
     prefix kc;                       // RFC VVVV
     revision-date YYYY-MM-DD;
   }
@@ -79,10 +79,12 @@ module ietf-ssh-server {
         min-elements 1;
         ordered-by user;
         description
-          "An ordered list of host keys the SSH server advertises
-           when sending its ??? message.";
+          "An ordered list of host keys the SSH server will use to
+           construct its ordered list of algorithms, when sending
+           its SSH_MSG_KEXINIT message, as defined in Section 7.1
+           of RFC 4253.";
         reference
-          "RFC ????: ...";
+          "RFC 4253: The Secure Shell (SSH) Transport Layer Protocol";
         leaf name {
           type string;
           mandatory true;
@@ -98,13 +100,15 @@ module ietf-ssh-server {
                    + "kc:name";
             }
             description
-              "The name of a private-key in the keychain.";
+              "The public key is actually identified by the name of
+               its cooresponding private-key in the keychain.";
           }
           leaf certificate {
             if-feature ssh-x509-certs;
             type leafref {
               path "/kc:keychain/kc:private-keys/kc:private-key/"
-                   + "kc:certificates/kc:certificate/kc:name";
+                   + "kc:certificate-chains/kc:certificate-chain/"
+                   + "kc:certificate";
             }
             description
               "The name of a certificate in the keychain.";
@@ -164,18 +168,16 @@ module ietf-ssh-server {
     uses non-listening-ssh-server-grouping;
   }
 
-  // RFC Editor: please remove the following container block
-  //             when publishing this document as an RFC.
   container listening-ssh-server {
     description
-      "This container is only present to enable `pyang` 
-       tree diagram output, as a grouping by itself has
-       no protocol accessible nodes to output.";
+      "This container will be removed by the RFC Editor. This
+       container is currently only present in order to enable
+       the `pyang` tool to generate tree diagram output of this
+       module (used in the draft) as it otherwise would not
+       contain any protocol accessible nodes to output.";
 
        uses listening-ssh-server-grouping;
   }
-
-
 }
 
 
